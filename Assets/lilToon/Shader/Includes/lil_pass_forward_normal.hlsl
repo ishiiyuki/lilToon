@@ -129,7 +129,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
 
     if (_NoMirror)
     {
-        if (!LIL_MATRIX_P[2][2] <= 0)
+        if (LIL_MATRIX_P[2][2] <= 0)
         {
             clip(-1);
         }
@@ -137,7 +137,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
 
     if (_NoCamera)
     {
-        if (!IsInVRCCamera())
+        if (IsInVRCCamera())
         {
             clip(-1);
         }
