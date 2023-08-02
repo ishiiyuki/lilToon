@@ -5,7 +5,8 @@ Shader "_lil/[Optional] lilToonFakeShadow"
         //----------------------------------------------------------------------------------------------------------------------
         // Base
         [lilToggle]     _Invisible                  ("sInvisible", Int) = 0
-
+        [lilToggle]     _NoMirror("sNoMirror", Int) = 0
+         [lilToggle]     _NoCamera("sNoCamera", Int) = 0
         //----------------------------------------------------------------------------------------------------------------------
         // Main
         [lilHDR] [MainColor] _Color                 ("sColor", Color) = (0.925,0.7,0.74,1)
