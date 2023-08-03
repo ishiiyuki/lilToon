@@ -1,7 +1,13 @@
 ## English
-Drag and drop unitypackage to the Unity window, or import `https://github.com/lilxyzw/lilToon.git?path=Assets/lilToon#master` from UPM.  
-[Download](https://github.com/lilxyzw/lilToon/releases) / [Documentation](https://lilxyzw.github.io/lilToon/index.html#/en-us/) / [How to distribute your works that use lilToon](https://lilxyzw.github.io/lilToon/#/en-us/first?id=how-to-distribute-your-works-that-use-liltoon)
+As for the LilToon part, please ask the officials.
+As for the ghost shader part, I'll deal with it if I have time, but basically, please use it at your own risk.
+If you ask me a question, I will not always return it.
+
+If you have any problems with this custom shader, I will not be able to help you.
 
 ## 日本語
-unitypackageをUnityウィンドウにドラッグ＆ドロップ、もしくはUPMから`https://github.com/lilxyzw/lilToon.git?path=Assets/lilToon#master`をインポートしてください。  
-[ダウンロード](https://github.com/lilxyzw/lilToon/releases) / [ドキュメント](https://lilxyzw.github.io/lilToon/index.html#/ja-jp/) / [lilToonを用いた制作物の配布手順について](https://lilxyzw.github.io/lilToon/#/ja-jp/first?id=liltoonを用いた制作物の配布について)
+LilToonの部分については公式に聞いてみてください。
+おばけシェーダー部分に関しては時間あったら対応するけど、基本使うときは自己責任でお願いします。
+私に質問しても、必ず返すことはないです。
+
+このカスタムしたシェーダーを使ってなにか問題有っても対応できません。
