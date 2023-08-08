@@ -11,3 +11,10 @@ LilToonの部分については公式に聞いてみてください。
 私に質問しても、必ず返すことはないです。
 
 このカスタムしたシェーダーを使ってなにか問題有っても対応できません。
+
+##使い方　
+基本設定のところのトグルでOn/Offします
+NoMirror でミラーに映らない
+NoCamera　でカメラに映らない
+この場合はカメラに映らないです。
+![nomirror](https://github.com/ishiiyuki/lilToon/assets/5183592/f831a20b-76e9-4ef4-af96-37ddbb80bbaf)
