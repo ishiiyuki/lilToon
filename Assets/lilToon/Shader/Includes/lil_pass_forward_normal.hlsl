@@ -148,7 +148,11 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
     {
         if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
         {
-            clip(-1);
+            //ƒJƒƒ‰ŽB‰eŽž‚É@HDˆÈŠO‚Å‚Í•ž’…‚Ä‚¨‚¯
+            if (IsInVRCCamera())
+            {
+                clip(-1);
+            }
         }
         /*
         if (IsInVRCCamera())
