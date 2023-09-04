@@ -307,6 +307,7 @@ namespace lilToon
         private readonly lilMaterialProperty invisible              = new lilMaterialProperty("_Invisible", PropertyBlock.Base);
         private readonly lilMaterialProperty noMirror = new lilMaterialProperty("_NoMirror", PropertyBlock.Base);
         private readonly lilMaterialProperty noCamera = new lilMaterialProperty("_NoCamera", PropertyBlock.Base);
+        private readonly lilMaterialProperty useMirrorTex = new lilMaterialProperty("_UseMirrorTex", PropertyBlock.Base);
 
         private readonly lilMaterialProperty cutoff                 = new lilMaterialProperty("_Cutoff", PropertyBlock.Base);
         private readonly lilMaterialProperty preColor               = new lilMaterialProperty("_PreColor", PropertyBlock.Base);
@@ -343,6 +344,9 @@ namespace lilToon
         private readonly lilMaterialProperty mainGradationStrength  = new lilMaterialProperty("_MainGradationStrength", PropertyBlock.MainColor, PropertyBlock.MainColor1st);
         private readonly lilMaterialProperty mainGradationTex       = new lilMaterialProperty("_MainGradationTex", true, PropertyBlock.MainColor, PropertyBlock.MainColor1st);
         private readonly lilMaterialProperty mainColorAdjustMask    = new lilMaterialProperty("_MainColorAdjustMask", true, PropertyBlock.MainColor, PropertyBlock.MainColor1st);
+        //
+
+        //
 
         private readonly lilMaterialProperty useMain2ndTex                          = new lilMaterialProperty("_UseMain2ndTex", PropertyBlock.MainColor, PropertyBlock.MainColor2nd);
         private readonly lilMaterialProperty mainColor2nd                           = new lilMaterialProperty("_Color2nd", PropertyBlock.MainColor, PropertyBlock.MainColor2nd);
@@ -908,6 +912,7 @@ namespace lilToon
                 invisible,
                 noMirror,
                 noCamera,
+                useMirrorTex,
                 cutoff,
                 preColor,
                 preOutType,
@@ -943,6 +948,9 @@ namespace lilToon
                 mainGradationStrength,
                 mainGradationTex,
                 mainColorAdjustMask,
+                //
+                
+                //
 
                 useMain2ndTex,
                 mainColor2nd,
@@ -4161,6 +4169,9 @@ namespace lilToon
             liteMaterial.SetFloat("_FlipNormal",                flipNormal.floatValue);
             liteMaterial.SetFloat("_BackfaceForceShadow",       backfaceForceShadow.floatValue);
 
+            liteMaterial.SetFloat("_UseMirrorTex", useMirrorTex.floatValue);
+
+
             liteMaterial.SetColor("_Color",                     mainColor.colorValue);
             liteMaterial.SetVector("_MainTex_ScrollRotate",     mainTex_ScrollRotate.vectorValue);
 
@@ -4488,7 +4499,7 @@ namespace lilToon
                     //プロパティ　トグルにnoMirrorをついあk
                     LocalizedProperty(noMirror);
                     LocalizedProperty(noCamera);
-
+                    //LocalizedProperty(useMirrorTex);
 
                     if (zwrite.floatValue != 1.0f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
                     {
@@ -6270,6 +6281,9 @@ namespace lilToon
                 var srcMain3 = new Texture2D(2, 2);
                 var srcMask2 = new Texture2D(2, 2);
                 var srcMask3 = new Texture2D(2, 2);
+
+                // TODO IZUNA
+                var srcMirror = new Texture2D(2, 2);
 
                 hsvgMaterial.SetColor(mainColor.name,           Color.white);
                 hsvgMaterial.SetVector(mainTexHSVG.name,        mainTexHSVG.vectorValue);
