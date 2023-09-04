@@ -1,12 +1,12 @@
 # lilToon
-Version 1.3.8
+Version 1.4.1
 
 # 概要
 アバターを用いたサービス（VRChat等）向けに開発したシェーダーで以下のような特徴があります。
 - 簡単（プリセットからワンクリック設定＆自作プリセットの保存、色調補正機能による色替え＆テクスチャ書き出し）
 - 美麗（白飛び防止、水中などでの透け防止、アンチエイリアスシェーディング）
 - 軽量（エディタが自動でシェーダーを書き換えて機能をオンオフ）
-- 長期間、様々な環境で利用可能（Unity2018～2022、BRP/LWRP/URP/HDRP）
+- 長期間、様々な環境で利用可能（Unity2018～2023、BRP/LWRP/URP/HDRP）
 - Unityの全ライティングに対応しStandardShaderに近い明るさに
 
 # 対応状況
@@ -21,7 +21,7 @@ Unityバージョン
 - Unity 2019.4.31f1 (Built-in RP / URP 7.7.1 / HDRP 7.7.1)
 - Unity 2020.3.47f1 (Built-in RP / URP 10.10.1 / HDRP 10.10.1)
 - Unity 2021.3.23f1 (Built-in RP / URP 12.1.11 / HDRP 12.1.11)
-- Unity 2022.2.15f1 (Built-in RP / URP 14.0.7 / HDRP 14.0.7)
+- Unity 2022.3.5f1 (Built-in RP / URP 14.0.8 / HDRP 14.0.8)
 - Unity 2023.2.0a11 (Built-in RP / URP 16.0.1 / HDRP 16.0.1)
 
 Unity 2021や2022の一部の古いバージョンではURP・HDRPでトランスフォームが適用されなかったりレンダリングされなかったりする等の不具合があります。問題が発生する場合は不具合が修正されたバージョンに更新してください。（ [GameObjects doesn't get rendered when using "Unlit.Unlit_UsePass" Shader](https://issuetracker.unity3d.com/issues/sphere-gameobject-doesnt-get-rendered-when-using-unlit-dot-unlit-usepass-shader) ）
