@@ -380,7 +380,7 @@ namespace lilToon
         private readonly lilMaterialProperty useMain3rdTex                          = new lilMaterialProperty("_UseMain3rdTex", PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
         private readonly lilMaterialProperty mainColor3rd                           = new lilMaterialProperty("_Color3rd", PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
         private readonly lilMaterialProperty main3rdTexAngle                        = new lilMaterialProperty("_Main3rdTexAngle", PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
-        private readonly lilMaterialProperty main3rdTex_ScrollRotate                = new lilMaterialProperty("_Main3rdTex_ScrollRotate", PropertyBlock.MainColor, PropertyBlock.MainColor2nd);
+        private readonly lilMaterialProperty main3rdTex_ScrollRotate                = new lilMaterialProperty("_Main3rdTex_ScrollRotate", PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
         private readonly lilMaterialProperty main3rdTex                             = new lilMaterialProperty("_Main3rdTex", true, PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
         private readonly lilMaterialProperty main3rdTex_UVMode                      = new lilMaterialProperty("_Main3rdTex_UVMode", PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
         private readonly lilMaterialProperty main3rdTex_Cull                        = new lilMaterialProperty("_Main3rdTex_Cull", PropertyBlock.MainColor, PropertyBlock.MainColor3rd);
@@ -1524,6 +1524,11 @@ namespace lilToon
 
         public void DrawAllGUI(MaterialEditor materialEditor, MaterialProperty[] props, Material material)
         {
+            if(lilDirectoryManager.ExistsEncryption() || lilDirectoryManager.ExistsAvaCryptV2())
+            {
+                EditorGUILayout.HelpBox("Encryption will be removed in the future.", MessageType.Warning);
+            }
+
             //------------------------------------------------------------------------------------------------------------------------------
             // EditorAssets
             lilEditorGUI.InitializeGUIStyles();
@@ -5869,6 +5874,7 @@ namespace lilToon
                     EditorGUILayout.LabelField(GetLoc("sEncryption"), customToggleFont);
                     DrawMenuButton(GetLoc("sAnchorEncryption"), PropertyBlock.Encryption);
                     EditorGUILayout.BeginVertical(boxInnerHalf);
+                    EditorGUILayout.HelpBox("This will be removed in the future.", MessageType.Warning);
                     LocalizedProperty(ignoreEncryption);
                     if(lilDirectoryManager.ExistsEncryption())
                     {
