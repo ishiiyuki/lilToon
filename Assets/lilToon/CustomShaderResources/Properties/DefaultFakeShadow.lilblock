@@ -3,6 +3,8 @@
         [lilToggle]     _Invisible                  ("sInvisible", Int) = 0
         [lilToggle]     _NoMirror                  ("sNoMirror", Int) = 0
         [lilToggle]     _NoCamera                  ("sNoCamera", Int) = 0
+        [lilToggle]     _OnlyMirror                  ("sOnlyMirror", Int) = 0
+        [lilToggle]     _OnlyCamera                  ("sOnlyCamera", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Main
