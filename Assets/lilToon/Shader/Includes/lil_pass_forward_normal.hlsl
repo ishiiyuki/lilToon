@@ -143,6 +143,14 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
         */
 
     }
+    else if(_OnlyMirror)
+    {
+        if (0 == _VRChatMirrorMode)
+        {
+            clip(-1);
+        }
+    }
+
 
     if (_NoCamera)
     {
@@ -156,6 +164,13 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
             clip(-1);
         }
         */
+    }
+    else if(_OnlyCamera)
+    {
+        if (0 == _VRChatCameraMode )
+        {
+            clip(-1);
+        }
     }
     //------------------------------------------------------------------------------------------------------------------------------
     // Initialize
