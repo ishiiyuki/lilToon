@@ -616,6 +616,8 @@ uint    _Cull;
 lilBool _Invisible;
 lilBool _NoMirror;
 lilBool _NoCamera;
+lilBool _OnlyMirror;
+lilBool _OnlyCamera;
 #if defined(LIL_FEATURE_MAIN2ND)
     lilBool _UseMain2ndTex;
     lilBool _Main2ndTexIsMSDF;
