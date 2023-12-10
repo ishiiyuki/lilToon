@@ -459,6 +459,7 @@ Shader "Hidden/lilToonFurTwoPass"
         [ToggleUI]      _IDMask6                    ("_IDMask6", Int) = 0
         [ToggleUI]      _IDMask7                    ("_IDMask7", Int) = 0
         [ToggleUI]      _IDMask8                    ("_IDMask8", Int) = 0
+        [ToggleUI]      _IDMaskIsBitmap             ("_IDMaskIsBitmap", Int) = 0
                         _IDMaskIndex1               ("_IDMaskIndex1", Int) = 0
                         _IDMaskIndex2               ("_IDMaskIndex2", Int) = 0
                         _IDMaskIndex3               ("_IDMaskIndex3", Int) = 0
@@ -467,6 +468,16 @@ Shader "Hidden/lilToonFurTwoPass"
                         _IDMaskIndex6               ("_IDMaskIndex6", Int) = 0
                         _IDMaskIndex7               ("_IDMaskIndex7", Int) = 0
                         _IDMaskIndex8               ("_IDMaskIndex8", Int) = 0
+
+        [ToggleUI]      _IDMaskControlsDissolve     ("_IDMaskControlsDissolve", Int) = 0
+        [ToggleUI]      _IDMaskPrior1               ("_IDMaskPrior1", Int) = 0
+        [ToggleUI]      _IDMaskPrior2               ("_IDMaskPrior2", Int) = 0
+        [ToggleUI]      _IDMaskPrior3               ("_IDMaskPrior3", Int) = 0
+        [ToggleUI]      _IDMaskPrior4               ("_IDMaskPrior4", Int) = 0
+        [ToggleUI]      _IDMaskPrior5               ("_IDMaskPrior5", Int) = 0
+        [ToggleUI]      _IDMaskPrior6               ("_IDMaskPrior6", Int) = 0
+        [ToggleUI]      _IDMaskPrior7               ("_IDMaskPrior7", Int) = 0
+        [ToggleUI]      _IDMaskPrior8               ("_IDMaskPrior8", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Encryption

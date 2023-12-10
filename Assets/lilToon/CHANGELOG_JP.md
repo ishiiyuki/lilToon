@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2023-12-10
+### 追加
+- altキーでプロパティ名を見られるようにした
+- IDMaskをbitmapとして扱うモードとDissolve対応
+- 最適化を強制的に無効化できる`LILTOON_DISABLE_OPTIMIZATION`シンボルを追加
+- `Assets/lilToon/[Material] Run migration`を追加
+
+### 変更
+- Temp配下に一時ファイルを生成しなくなった
+
+### 修正
+- 透過モードのラベルが壊れていたのを修正
+- URPでMotionVectorが正しく出力されていなかったのを修正
+- UnityがUVチャンネルを過剰に削除してしまうのを回避
+- 複数編集時の不具合を修正
+- 色調補正のベイクが正しく動作していなかったのを修正
+
+### 削除
+- `IPreprocessShaders`による最適化を削除
+
 ## [1.4.1] - 2023-09-04
 ### 修正
 - ボーンが不足している場合に`Fix Lighting`が正しく動作しないのを修正
