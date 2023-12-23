@@ -458,6 +458,7 @@ Shader "Hidden/lilToonTransparent"
         [ToggleUI]      _IDMask6                    ("_IDMask6", Int) = 0
         [ToggleUI]      _IDMask7                    ("_IDMask7", Int) = 0
         [ToggleUI]      _IDMask8                    ("_IDMask8", Int) = 0
+        [ToggleUI]      _IDMaskIsBitmap             ("_IDMaskIsBitmap", Int) = 0
                         _IDMaskIndex1               ("_IDMaskIndex1", Int) = 0
                         _IDMaskIndex2               ("_IDMaskIndex2", Int) = 0
                         _IDMaskIndex3               ("_IDMaskIndex3", Int) = 0
@@ -466,6 +467,16 @@ Shader "Hidden/lilToonTransparent"
                         _IDMaskIndex6               ("_IDMaskIndex6", Int) = 0
                         _IDMaskIndex7               ("_IDMaskIndex7", Int) = 0
                         _IDMaskIndex8               ("_IDMaskIndex8", Int) = 0
+
+        [ToggleUI]      _IDMaskControlsDissolve     ("_IDMaskControlsDissolve", Int) = 0
+        [ToggleUI]      _IDMaskPrior1               ("_IDMaskPrior1", Int) = 0
+        [ToggleUI]      _IDMaskPrior2               ("_IDMaskPrior2", Int) = 0
+        [ToggleUI]      _IDMaskPrior3               ("_IDMaskPrior3", Int) = 0
+        [ToggleUI]      _IDMaskPrior4               ("_IDMaskPrior4", Int) = 0
+        [ToggleUI]      _IDMaskPrior5               ("_IDMaskPrior5", Int) = 0
+        [ToggleUI]      _IDMaskPrior6               ("_IDMaskPrior6", Int) = 0
+        [ToggleUI]      _IDMaskPrior7               ("_IDMaskPrior7", Int) = 0
+        [ToggleUI]      _IDMaskPrior8               ("_IDMaskPrior8", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Encryption
@@ -650,6 +661,63 @@ Shader "Hidden/lilToonTransparent"
         UsePass "Hidden/ltspass_transparent/FORWARD_ADD"
         UsePass "Hidden/ltspass_transparent/SHADOW_CASTER"
         UsePass "Hidden/ltspass_transparent/META"
+        Pass
+        {
+            Tags { "LightMode" = "Never" }
+            HLSLPROGRAM
+// Unity strips unused UV channels from meshes; unfortunately, in 2022.3.13f1, Unity fails to detect that UV channels
+// are used when they are referenced from a pass included via `UsePass`. This fake pass is #included directly into
+// each shader to work around this; because this has an invalid lightmode set, it will never actually be executed.
+//
+// Unity bug report ID: IN-60271
+#pragma vertex vert
+#pragma fragment frag
+
+// For some reason, using struct appdata from lil_common_appdata doesn't work as a workaround...
+//#include "Includes/lil_pipeline_brp.hlsl"
+//#include "Includes/lil_common.hlsl"
+//#include "Includes/lil_common_appdata.hlsl"
+
+
+            struct appdata
+            {
+                float2 uv : TEXCOORD0;
+                float2 uv1 : TEXCOORD1;
+                float2 uv2 : TEXCOORD2;
+                float2 uv3 : TEXCOORD3;
+                
+                float2 uv4 : TEXCOORD4;
+                float2 uv5 : TEXCOORD5;
+                float2 uv6 : TEXCOORD6;
+                float2 uv7 : TEXCOORD7;
+                
+
+                float4 pos : POSITION;
+            };
+
+            struct v2f
+            {
+                float4 pos : POSITION;
+                float4 col : TEXCOORD0;
+            };
+
+            struct v2f vert(struct appdata input)
+            {
+                struct v2f output;
+                // Don't actually render to the screen, but pass UV-derived data all the way down to the fragment
+                // shader so it shows up as an input in the compiled shader program.
+                output.pos = float4(0,0,0,1);
+                output.col = float4(input.uv, input.uv1) + float4(input.uv2, input.uv3)
+                  + float4(input.uv4, input.uv5) + float4(input.uv6, input.uv7);
+                return output;
+            }
+
+            float4 frag(v2f i) : SV_Target
+            {
+                return i.col;
+            }
+            ENDHLSL
+        }
     }
     Fallback "Unlit/Texture"
 

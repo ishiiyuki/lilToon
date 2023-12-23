@@ -66,10 +66,9 @@ namespace lilToon
         public static GUIContent cubemapContent;
         public static GUIContent audioLinkLocalMapContent;
         public static GUIContent gradationMapContent;
-        public static LanguageSettings langSet = new LanguageSettings();
+        public static LanguageSettings langSet { get { return LanguageSettings.instance; } }
 
-        [Serializable]
-        public class LanguageSettings
+        public class LanguageSettings : ScriptableSingleton<LanguageSettings>
         {
             public int languageNum = -1;
             public string languageNames = "";
@@ -82,22 +81,6 @@ namespace lilToon
         public static bool ShouldApplyTemp()
         {
             return string.IsNullOrEmpty(langSet.languageNames);
-        }
-
-        public static void ApplySettingTemp()
-        {
-            if(!ShouldApplyTemp() || !File.Exists(lilDirectoryManager.languageSettingTempPath)) return;
-            StreamReader sr = new StreamReader(lilDirectoryManager.languageSettingTempPath);
-            string s = sr.ReadToEnd();
-            sr.Close();
-            if(!string.IsNullOrEmpty(s)) EditorJsonUtility.FromJsonOverwrite(s,langSet);
-        }
-
-        public static void SaveSettingTemp()
-        {
-            StreamWriter sw = new StreamWriter(lilDirectoryManager.languageSettingTempPath,false);
-            sw.Write(EditorJsonUtility.ToJson(langSet));
-            sw.Close();
         }
 
         public static void LoadCustomLanguage(string langFileGUID)
@@ -166,9 +149,7 @@ namespace lilToon
             loc["sDissolveParams"]           = BuildParams(GetLoc("sDissolveMode"), GetLoc("sDissolveModeNone"), GetLoc("sDissolveModeAlpha"), GetLoc("sDissolveModeUV"), GetLoc("sDissolveModePosition"), GetLoc("sDissolveShape"), GetLoc("sDissolveShapePoint"), GetLoc("sDissolveShapeLine"), GetLoc("sBorder"), GetLoc("sBlur"));
             loc["sDissolveParamsModes"]       = BuildParams(GetLoc("sDissolve"), GetLoc("sDissolveModeNone"), GetLoc("sDissolveModeAlpha"), GetLoc("sDissolveModeUV"), GetLoc("sDissolveModePosition"));
             loc["sDissolveParamsOther"]      = BuildParams(GetLoc("sDissolveShape"), GetLoc("sDissolveShapePoint"), GetLoc("sDissolveShapeLine"), GetLoc("sBorder"), GetLoc("sBlur"), "Dummy");
-            //loc["sGlitterParams1"]           = BuildParams("Tiling", GetLoc("sParticleSize"), GetLoc("sContrast"));
             loc["sGlitterParams2"]           = BuildParams(GetLoc("sBlinkSpeed"), GetLoc("sAngleLimit"), GetLoc("sRimLightDirection"), GetLoc("sColorRandomness"));
-            loc["sTransparentMode"]          = BuildParams(GetLoc("sRenderingMode"), GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeGem"));
             loc["sOutlineVertexColorUsages"] = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
             loc["sShadowColorTypes"]         = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             loc["sShadowMaskTypes"]          = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"));
@@ -241,18 +222,22 @@ namespace lilToon
 
         public static string GetDisplayLabel(MaterialProperty prop)
         {
-            return string.Join("",
-                prop.displayName.Split('|').First().Split('+').Select(m=>GetLoc(m)).ToArray()
-            );
+            var labels = prop.displayName.Split('|').First().Split('+').Select(m=>GetLoc(m)).ToArray();
+            if(Event.current.alt) labels[0] = prop.name;
+            return string.Join("", labels);
         }
 
         public static string GetDisplayName(MaterialProperty prop)
         {
-            return string.Join("|",
-                prop.displayName.Split('|').Select(
-                    n=>string.Join("",n.Split('+').Select(m=>GetLoc(m)).ToArray())
-                ).ToArray()
-            );
+            var labels = prop.displayName.Split('|').Select(
+                n=>string.Join("",n.Split('+').Select(m=>GetLoc(m)).ToArray())
+            ).ToArray();
+            if(Event.current.alt)
+            {
+                if(labels[0].Contains("|")) labels[0] = prop.name + labels[0].Substring(labels[0].IndexOf("|"));
+                else labels[0] = prop.name;
+            }
+            return string.Join("|", labels);
         }
 
         public static string GetDisplayName(string label)
@@ -263,6 +248,9 @@ namespace lilToon
                 ).ToArray()
             );
         }
+
+        [Obsolete("This may be deleted in the future.")] public static void ApplySettingTemp(){}
+        [Obsolete("This may be deleted in the future.")] public static void SaveSettingTemp(){}
     }
 }
 #endif
