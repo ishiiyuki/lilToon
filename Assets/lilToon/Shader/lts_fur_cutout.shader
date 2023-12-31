@@ -198,6 +198,16 @@ Shader "Hidden/lilToonFurCutout"
                         _ShadowFlatBlur             ("sBlur", Range(0.001, 2)) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
+        // Rim Shade
+        [lilToggleLeft] _UseRimShade                ("RimShade", Int) = 0
+                        _RimShadeColor              ("sColor", Color) = (0.5,0.5,0.5,1.0)
+        [NoScaleOffset] _RimShadeMask               ("Mask", 2D) = "white" {}
+                        _RimShadeNormalStrength     ("sNormalStrength", Range(0, 1)) = 1.0
+                        _RimShadeBorder             ("sBorder", Range(0, 1)) = 0.5
+                        _RimShadeBlur               ("sBlur", Range(0, 1)) = 1.0
+        [PowerSlider(3.0)]_RimShadeFresnelPower     ("sFresnelPower", Range(0.01, 50)) = 1.0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Reflection
         [lilToggleLeft] _UseReflection              ("sReflection", Int) = 0
         // Smoothness
@@ -449,6 +459,11 @@ Shader "Hidden/lilToonFurCutout"
 
         //----------------------------------------------------------------------------------------------------------------------
         // ID Mask
+        // _IDMaskCompile will enable compilation of IDMask-related systems. For compatibility, setting certain
+        // parameters to non-zero values will also enable the IDMask feature, but this enable switch ensures that
+        // animator-controlled IDMasked meshes will be compiled correctly. Note that this _only_ controls compilation,
+        // and is ignored at runtime.
+        [ToggleUI]      _IDMaskCompile              ("_IDMaskCompile", Int) = 0
         [lilEnum]       _IDMaskFrom                 ("_IDMaskFrom|0: UV0|1: UV1|2: UV2|3: UV3|4: UV4|5: UV5|6: UV6|7: UV7|8: VertexID", Int) = 8
         [ToggleUI]      _IDMask1                    ("_IDMask1", Int) = 0
         [ToggleUI]      _IDMask2                    ("_IDMask2", Int) = 0
@@ -557,7 +572,7 @@ Shader "Hidden/lilToonFurCutout"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 35
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 39
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -660,6 +675,7 @@ Shader "Hidden/lilToonFurCutout"
             #define LIL_FEATURE_RECEIVE_SHADOW
             #define LIL_FEATURE_SHADOW_3RD
             #define LIL_FEATURE_SHADOW_LUT
+            #define LIL_FEATURE_RIMSHADE
             #define LIL_FEATURE_EMISSION_1ST
             #define LIL_FEATURE_EMISSION_2ND
             #define LIL_FEATURE_ANIMATE_EMISSION_UV

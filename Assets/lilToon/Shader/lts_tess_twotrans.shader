@@ -199,6 +199,16 @@ Shader "Hidden/lilToonTessellationTwoPassTransparent"
                         _ShadowFlatBlur             ("sBlur", Range(0.001, 2)) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
+        // Rim Shade
+        [lilToggleLeft] _UseRimShade                ("RimShade", Int) = 0
+                        _RimShadeColor              ("sColor", Color) = (0.5,0.5,0.5,1.0)
+        [NoScaleOffset] _RimShadeMask               ("Mask", 2D) = "white" {}
+                        _RimShadeNormalStrength     ("sNormalStrength", Range(0, 1)) = 1.0
+                        _RimShadeBorder             ("sBorder", Range(0, 1)) = 0.5
+                        _RimShadeBlur               ("sBlur", Range(0, 1)) = 1.0
+        [PowerSlider(3.0)]_RimShadeFresnelPower     ("sFresnelPower", Range(0.01, 50)) = 1.0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Reflection
         [lilToggleLeft] _UseReflection              ("sReflection", Int) = 0
         // Smoothness
@@ -450,6 +460,11 @@ Shader "Hidden/lilToonTessellationTwoPassTransparent"
 
         //----------------------------------------------------------------------------------------------------------------------
         // ID Mask
+        // _IDMaskCompile will enable compilation of IDMask-related systems. For compatibility, setting certain
+        // parameters to non-zero values will also enable the IDMask feature, but this enable switch ensures that
+        // animator-controlled IDMasked meshes will be compiled correctly. Note that this _only_ controls compilation,
+        // and is ignored at runtime.
+        [ToggleUI]      _IDMaskCompile              ("_IDMaskCompile", Int) = 0
         [lilEnum]       _IDMaskFrom                 ("_IDMaskFrom|0: UV0|1: UV1|2: UV2|3: UV3|4: UV4|5: UV5|6: UV6|7: UV7|8: VertexID", Int) = 8
         [ToggleUI]      _IDMask1                    ("_IDMask1", Int) = 0
         [ToggleUI]      _IDMask2                    ("_IDMask2", Int) = 0
@@ -558,7 +573,7 @@ Shader "Hidden/lilToonTessellationTwoPassTransparent"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 35
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 39
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -666,19 +681,20 @@ Shader "Hidden/lilToonTessellationTwoPassTransparent"
         Pass
         {
             Tags { "LightMode" = "Never" }
-            HLSLPROGRAM
-// Unity strips unused UV channels from meshes; unfortunately, in 2022.3.13f1, Unity fails to detect that UV channels
-// are used when they are referenced from a pass included via `UsePass`. This fake pass is #included directly into
-// each shader to work around this; because this has an invalid lightmode set, it will never actually be executed.
-//
-// Unity bug report ID: IN-60271
-#pragma vertex vert
-#pragma fragment frag
 
-// For some reason, using struct appdata from lil_common_appdata doesn't work as a workaround...
-//#include "Includes/lil_pipeline_brp.hlsl"
-//#include "Includes/lil_common.hlsl"
-//#include "Includes/lil_common_appdata.hlsl"
+            HLSLPROGRAM
+            // Unity strips unused UV channels from meshes; unfortunately, in 2022.3.13f1, Unity fails to detect that UV channels
+            // are used when they are referenced from a pass included via `UsePass`. This fake pass is #included directly into
+            // each shader to work around this; because this has an invalid lightmode set, it will never actually be executed.
+            //
+            // Unity bug report ID: IN-60271
+            #pragma vertex vert
+            #pragma fragment frag
+
+            // For some reason, using struct appdata from lil_common_appdata doesn't work as a workaround...
+            //#include "Includes/lil_pipeline_brp.hlsl"
+            //#include "Includes/lil_common.hlsl"
+            //#include "Includes/lil_common_appdata.hlsl"
 
 
             struct appdata
@@ -687,12 +703,18 @@ Shader "Hidden/lilToonTessellationTwoPassTransparent"
                 float2 uv1 : TEXCOORD1;
                 float2 uv2 : TEXCOORD2;
                 float2 uv3 : TEXCOORD3;
-                
+
                 float2 uv4 : TEXCOORD4;
                 float2 uv5 : TEXCOORD5;
                 float2 uv6 : TEXCOORD6;
                 float2 uv7 : TEXCOORD7;
-                
+
+                float4 color        : COLOR;
+                float3 normalOS     : NORMAL;
+                float4 tangentOS    : TANGENT;
+                #if !defined(SHADER_API_MOBILE) && !defined(SHADER_API_GLES)
+                uint vertexID       : SV_VertexID;
+                #endif
 
                 float4 pos : POSITION;
             };
@@ -710,7 +732,13 @@ Shader "Hidden/lilToonTessellationTwoPassTransparent"
                 // shader so it shows up as an input in the compiled shader program.
                 output.pos = float4(0,0,0,1);
                 output.col = float4(input.uv, input.uv1) + float4(input.uv2, input.uv3)
-                  + float4(input.uv4, input.uv5) + float4(input.uv6, input.uv7);
+                  + float4(input.uv4, input.uv5) + float4(input.uv6, input.uv7)
+                  + input.color + float4(input.normalOS, 1) + input.tangentOS;
+
+                #if !defined(SHADER_API_MOBILE) && !defined(SHADER_API_GLES)
+                output.col.a += input.vertexID;
+                #endif
+
                 return output;
             }
 

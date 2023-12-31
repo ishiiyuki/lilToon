@@ -111,7 +111,6 @@ namespace lilToon
         public class lilToonEditorSetting : ScriptableSingleton<lilToonEditorSetting>
         {
             public EditorMode editorMode = EditorMode.Simple;
-            public int currentVersionValue = 0;
             public bool isShowBase                      = false;
             public bool isShowPrePreset                 = false;
             public bool isShowMainUV                    = false;
@@ -119,6 +118,7 @@ namespace lilToon
             public bool isShowMainTone                  = false;
             public bool isShowShadow                    = false;
             public bool isShowShadowAO                  = false;
+            public bool isShowRimShade                  = false;
             public bool isShowBump                      = false;
             public bool isShowReflections               = false;
             public bool isShowEmission                  = false;
@@ -449,6 +449,14 @@ namespace lilToon
         private readonly lilMaterialProperty shadowFlatBlur             = new lilMaterialProperty("_ShadowFlatBlur", PropertyBlock.Shadow);
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
 
+        private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
+        private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
+        private readonly lilMaterialProperty rimShadeMask           = new lilMaterialProperty("_RimShadeMask", PropertyBlock.RimShade);
+        private readonly lilMaterialProperty rimShadeNormalStrength = new lilMaterialProperty("_RimShadeNormalStrength", PropertyBlock.RimShade);
+        private readonly lilMaterialProperty rimShadeBorder         = new lilMaterialProperty("_RimShadeBorder", PropertyBlock.RimShade);
+        private readonly lilMaterialProperty rimShadeBlur           = new lilMaterialProperty("_RimShadeBlur", PropertyBlock.RimShade);
+        private readonly lilMaterialProperty rimShadeFresnelPower   = new lilMaterialProperty("_RimShadeFresnelPower", PropertyBlock.RimShade);
+
         private readonly lilMaterialProperty useEmission                    = new lilMaterialProperty("_UseEmission", PropertyBlock.Emission, PropertyBlock.Emission1st);
         private readonly lilMaterialProperty emissionColor                  = new lilMaterialProperty("_EmissionColor", PropertyBlock.Emission, PropertyBlock.Emission1st);
         private readonly lilMaterialProperty emissionMap                    = new lilMaterialProperty("_EmissionMap", true, PropertyBlock.Emission, PropertyBlock.Emission1st);
@@ -704,6 +712,7 @@ namespace lilToon
         private readonly lilMaterialProperty dissolveParams                 = new lilMaterialProperty("_DissolveParams", PropertyBlock.Dissolve);
         private readonly lilMaterialProperty dissolvePos                    = new lilMaterialProperty("_DissolvePos", PropertyBlock.Dissolve);
 
+        private readonly lilMaterialProperty idMaskCompile  = new lilMaterialProperty("_IDMaskCompile", PropertyBlock.IDMask);
         private readonly lilMaterialProperty idMaskFrom     = new lilMaterialProperty("_IDMaskFrom", PropertyBlock.IDMask);
         private readonly lilMaterialProperty idMask1        = new lilMaterialProperty("_IDMask1", PropertyBlock.IDMask);
         private readonly lilMaterialProperty idMask2        = new lilMaterialProperty("_IDMask2", PropertyBlock.IDMask);
@@ -1061,6 +1070,14 @@ namespace lilToon
                 shadowFlatBlur,
                 lilShadowCasterBias,
 
+                useRimShade,
+                rimShadeColor,
+                rimShadeMask,
+                rimShadeNormalStrength,
+                rimShadeBorder,
+                rimShadeBlur,
+                rimShadeFresnelPower,
+
                 useEmission,
                 emissionColor,
                 emissionMap,
@@ -1316,6 +1333,7 @@ namespace lilToon
                 dissolveParams,
                 dissolvePos,
 
+                idMaskCompile,
                 idMaskFrom,
                 idMaskIsBitmap,
                 idMask1,
@@ -2602,6 +2620,34 @@ namespace lilToon
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
+                // Rim Shade
+                if(!isGem)
+                {
+                    if(ShouldDrawBlock(PropertyBlock.RimShade))
+                    {
+                        edSet.isShowRimShade = lilEditorGUI.Foldout("RimShade", edSet.isShowRimShade);
+                        DrawMenuButton(GetLoc("sAnchorRimShade"), PropertyBlock.RimShade);
+                        if(edSet.isShowRimShade)
+                        {
+                            EditorGUILayout.BeginVertical(boxOuter);
+                            LocalizedProperty(useRimShade, false);
+                            DrawMenuButton(GetLoc("sAnchorRimShade"), PropertyBlock.RimShade);
+                            if(useRimShade.floatValue == 1)
+                            {
+                                EditorGUILayout.BeginVertical(boxInnerHalf);
+                                LocalizedPropertyTexture(colorMaskRGBAContent, rimShadeMask, rimShadeColor);
+                                LocalizedProperty(rimShadeNormalStrength);
+                                LocalizedProperty(rimShadeBorder);
+                                LocalizedProperty(rimShadeBlur);
+                                LocalizedProperty(rimShadeFresnelPower);
+                                EditorGUILayout.EndVertical();
+                            }
+                            EditorGUILayout.EndVertical();
+                        }
+                    }
+                }
+
+                //------------------------------------------------------------------------------------------------------------------------------
                 // Emission
                 if(ShouldDrawBlock(PropertyBlock.Emission))
                 {
@@ -3089,6 +3135,7 @@ namespace lilToon
                         EditorGUILayout.BeginVertical(boxInnerHalf);
                         EditorGUILayout.HelpBox("It is recommended that these properties be set from scripts.", MessageType.Warning);
                         EditorGUILayout.HelpBox("If you want to mask vertex ids 1000 to 1999, set:\r\n_IDMask1 = 1\r\n_IDMaskIndex1 = 1000\r\n_IDMaskIndex2 = 2000", MessageType.Info);
+                        LocalizedProperty(idMaskCompile);
                         LocalizedProperty(idMaskFrom);
                         LocalizedProperty(idMaskIsBitmap);
 

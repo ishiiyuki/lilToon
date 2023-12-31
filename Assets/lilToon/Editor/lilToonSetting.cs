@@ -14,6 +14,9 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+#if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
+    using System.Text.RegularExpressions;
+#endif
 
 public class lilToonSetting : ScriptableObject
 {
@@ -30,6 +33,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_RECEIVE_SHADOW = true;
     public bool LIL_FEATURE_SHADOW_3RD = true;
     public bool LIL_FEATURE_SHADOW_LUT = true;
+    public bool LIL_FEATURE_RIMSHADE = true;
     public bool LIL_FEATURE_EMISSION_1ST = true;
     public bool LIL_FEATURE_EMISSION_2ND = true;
     public bool LIL_FEATURE_ANIMATE_EMISSION_UV = true;
@@ -149,6 +153,9 @@ public class lilToonSetting : ScriptableObject
     public lilToonPreset presetHair;
     public lilToonPreset presetCloth;
 
+    // This is not a shader setting, but the version number is stored here for material migration.
+    public int previousVersion = 0;
+
     // Lock
     internal static void SaveLockedSetting(lilToonSetting shaderSetting)
     {
@@ -246,6 +253,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_SHADOW_3RD = false;
         shaderSetting.LIL_FEATURE_SHADOW_LUT = false;
         shaderSetting.LIL_FEATURE_RECEIVE_SHADOW = false;
+        shaderSetting.LIL_FEATURE_RIMSHADE = false;
         shaderSetting.LIL_FEATURE_EMISSION_1ST = false;
         shaderSetting.LIL_FEATURE_EMISSION_2ND = false;
         shaderSetting.LIL_FEATURE_ANIMATE_EMISSION_UV = false;
@@ -354,6 +362,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_SHADOW_3RD = true;
         shaderSetting.LIL_FEATURE_SHADOW_LUT = true;
         shaderSetting.LIL_FEATURE_RECEIVE_SHADOW = true;
+        shaderSetting.LIL_FEATURE_RIMSHADE = true;
         shaderSetting.LIL_FEATURE_EMISSION_1ST = true;
         shaderSetting.LIL_FEATURE_EMISSION_2ND = true;
         shaderSetting.LIL_FEATURE_ANIMATE_EMISSION_UV = true;
@@ -537,6 +546,7 @@ public class lilToonSetting : ScriptableObject
             if(shaderSetting.LIL_FEATURE_SHADOW_3RD) sb.AppendLine("#define LIL_FEATURE_SHADOW_3RD");
             if(shaderSetting.LIL_FEATURE_SHADOW_LUT) sb.AppendLine("#define LIL_FEATURE_SHADOW_LUT");
         }
+        if(shaderSetting.LIL_FEATURE_RIMSHADE) sb.AppendLine("#define LIL_FEATURE_RIMSHADE");
 
         if(shaderSetting.LIL_FEATURE_EMISSION_1ST) sb.AppendLine("#define LIL_FEATURE_EMISSION_1ST");
         if(shaderSetting.LIL_FEATURE_EMISSION_2ND) sb.AppendLine("#define LIL_FEATURE_EMISSION_2ND");
@@ -800,11 +810,43 @@ public class lilToonSetting : ScriptableObject
         shaderSettingText = BuildShaderSettingString(shaderSetting, false);
     }
 
+    #if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
+    private static bool WorkaroundForUsePassBug()
+    {
+        // Normally, there is no problem if you update Unity.
+        // This workaround exists for unusual cases.
+        // https://issuetracker.unity3d.com/issues/crash-on-malloc-internal-when-recompiling-a-shadergraph-used-by-another-shader-via-usepass
+        var regex = new Regex(@"(\d*)\.(\d*)\.(\d*)");
+        var match = regex.Match(Application.unityVersion);
+
+        if(!match.Success) return true;
+        var major = int.Parse(match.Groups[1].Value);
+        var minor = int.Parse(match.Groups[2].Value);
+        var patch = int.Parse(match.Groups[3].Value);
+
+        if(major == 2022 && (minor < 3 || patch < 14)) return true;
+        if(major == 2023 && patch < 20) return true;
+
+        return false;
+    }
+    #endif
+
     internal static void SetShaderSettingBeforeBuild(Material[] materials, AnimationClip[] clips)
     {
         #if !LILTOON_DISABLE_OPTIMIZATION
+        #if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
+            if(WorkaroundForUsePassBug()){ Debug.Log("[lilToon] Skip Optimization"); return; }
+        #endif
         try
         {
+            #if UNITY_2022_1_OR_NEWER
+                var materialParents = new HashSet<Material>();
+                foreach(var m in materials)
+                {
+                    GetMaterialParents(materialParents, m);
+                }
+                materials = materials.Union(materialParents).ToArray();
+            #endif
             if(!ShouldOptimization()) return;
             var shaders = GetShaderListFromGameObject(materials, clips);
             if(shaders.Count() == 0) return;
@@ -841,9 +883,22 @@ public class lilToonSetting : ScriptableObject
         #endif
     }
 
+    #if UNITY_2022_1_OR_NEWER
+    private static void GetMaterialParents(HashSet<Material> parents, Material material)
+    {
+        var p = material.parent;
+        if(p == null) return;
+        parents.Add(p);
+        GetMaterialParents(parents, p);
+    }
+    #endif
+
     internal static void SetShaderSettingBeforeBuild()
     {
         #if !LILTOON_DISABLE_OPTIMIZATION
+        #if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
+            if(WorkaroundForUsePassBug()){ Debug.Log("[lilToon] Skip Optimization"); return; }
+        #endif
         try
         {
             if(!ShouldOptimization()) return;
@@ -905,6 +960,11 @@ public class lilToonSetting : ScriptableObject
         {
             Debug.Log("[lilToon] LIL_FEATURE_SHADOW : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_SHADOW = true;
+        }
+        if(!shaderSetting.LIL_FEATURE_RIMSHADE && material.HasProperty("_UseRimShade") && material.GetFloat("_UseRimShade") != 0.0f)
+        {
+            Debug.Log("[lilToon] LIL_FEATURE_RIMSHADE : " + AssetDatabase.GetAssetPath(material));
+            shaderSetting.LIL_FEATURE_RIMSHADE = true;
         }
         if(!shaderSetting.LIL_FEATURE_RECEIVE_SHADOW && material.HasProperty("_UseShadow") && material.GetFloat("_UseShadow") != 0.0f && (
             (material.HasProperty("_ShadowReceive") && material.GetFloat("_ShadowReceive") > 0.0f) ||
@@ -1119,7 +1179,8 @@ public class lilToonSetting : ScriptableObject
             material.HasProperty("_IDMask6") && material.GetFloat("_IDMask6") != 0.0f ||
             material.HasProperty("_IDMask7") && material.GetFloat("_IDMask7") != 0.0f ||
             material.HasProperty("_IDMask8") && material.GetFloat("_IDMask8") != 0.0f ||
-            material.HasProperty("_IDMaskIsBitmap") && material.GetFloat("_IDMaskIsBitmap") != 0.0f
+            material.HasProperty("_IDMaskIsBitmap") && material.GetFloat("_IDMaskIsBitmap") != 0.0f ||
+            material.HasProperty("_IDMaskCompile") && material.GetFloat("_IDMaskCompile") != 0.0f
         ))
         {
             Debug.Log("[lilToon] LIL_FEATURE_IDMASK : " + AssetDatabase.GetAssetPath(material));
@@ -1179,6 +1240,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_DISTANCE_FADE = shaderSetting.LIL_FEATURE_DISTANCE_FADE || propname.Contains("_DistanceFade");
             shaderSetting.LIL_FEATURE_SHADOW_3RD = shaderSetting.LIL_FEATURE_SHADOW_3RD || propname.Contains("_Shadow3rdColor");
             shaderSetting.LIL_FEATURE_SHADOW_LUT = shaderSetting.LIL_FEATURE_SHADOW_LUT || propname.Contains("_ShadowColorType");
+            shaderSetting.LIL_FEATURE_RIMSHADE = shaderSetting.LIL_FEATURE_RIMSHADE || propname.Contains("_UseRimShade");
 
             shaderSetting.LIL_FEATURE_FUR_COLLISION = shaderSetting.LIL_FEATURE_FUR_COLLISION || propname.Contains("_FurTouchStrength");
 
