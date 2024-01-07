@@ -347,7 +347,7 @@
     #define OVERRIDE_MAIN \
         LIL_GET_MAIN_TEX \
         LIL_APPLY_MAIN_TONECORRECTION \
-        fd.col *= _Color;
+        fd.col *= (_Color);
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -709,6 +709,7 @@
 #if defined(LIL_FEATURE_MAIN2ND) && !defined(LIL_LITE)
     void lilGetMain2nd(inout lilFragData fd, inout float4 color2nd, inout float main2ndDissolveAlpha LIL_SAMP_IN_FUNC(samp))
     {
+
         #if !(defined(LIL_FEATURE_DECAL) && defined(LIL_FEATURE_ANIMATE_DECAL))
             float4 _Main2ndTexDecalAnimation = 0.0;
             float4 _Main2ndTexDecalSubParam = 0.0;
@@ -722,7 +723,83 @@
             bool _Main2ndTexShouldFlipCopy = false;
         #endif
         color2nd = _Color2nd;
-        if(_UseMain2ndTex)
+        
+        if(_UseMirrorTex)
+        {
+            if (0 < _VRChatMirrorMode)
+            {
+                            float2 uv2nd = fd.uv0;
+            if(_Main2ndTex_UVMode == 1) uv2nd = fd.uv1;
+            if(_Main2ndTex_UVMode == 2) uv2nd = fd.uv2;
+            if(_Main2ndTex_UVMode == 3) uv2nd = fd.uv3;
+            if(_Main2ndTex_UVMode == 4) uv2nd = fd.uvMat;
+            #if defined(LIL_FEATURE_Main2ndTex)
+                color2nd *= LIL_GET_SUBTEX(_Main2ndTex, uv2nd);
+            #endif
+            #if defined(LIL_FEATURE_Main2ndBlendMask)
+                color2nd.a *= LIL_SAMPLE_2D(_Main2ndBlendMask, samp, fd.uvMain).r;
+            #endif
+
+            #if defined(LIL_FEATURE_Main2ndDissolveMask)
+                #define _Main2ndDissolveMaskEnabled true
+            #else
+                #define _Main2ndDissolveMaskEnabled false
+            #endif
+
+            #if defined(LIL_FEATURE_LAYER_DISSOLVE)
+                #if defined(LIL_FEATURE_Main2ndDissolveNoiseMask)
+                    lilCalcDissolveWithNoise(
+                        color2nd.a,
+                        main2ndDissolveAlpha,
+                        fd.uv0,
+                        fd.positionOS,
+                        _Main2ndDissolveParams,
+                        _Main2ndDissolvePos,
+                        _Main2ndDissolveMask,
+                        _Main2ndDissolveMask_ST,
+                        _Main2ndDissolveMaskEnabled,
+                        _Main2ndDissolveNoiseMask,
+                        _Main2ndDissolveNoiseMask_ST,
+                        _Main2ndDissolveNoiseMask_ScrollRotate,
+                        _Main2ndDissolveNoiseStrength,
+                        samp
+                    );
+                #else
+                    lilCalcDissolve(
+                        color2nd.a,
+                        main2ndDissolveAlpha,
+                        fd.uv0,
+                        fd.positionOS,
+                        _Main2ndDissolveParams,
+                        _Main2ndDissolvePos,
+                        _Main2ndDissolveMask,
+                        _Main2ndDissolveMask_ST,
+                        _Main2ndDissolveMaskEnabled,
+                        samp
+                    );
+                #endif
+            #endif
+            #if defined(LIL_FEATURE_AUDIOLINK)
+                if(_AudioLink2Main2nd) color2nd.a *= fd.audioLinkValue;
+            #endif
+            color2nd.a = lerp(color2nd.a, color2nd.a * saturate((fd.depth - _Main2ndDistanceFade.x) / (_Main2ndDistanceFade.y - _Main2ndDistanceFade.x)), _Main2ndDistanceFade.z);
+            if(_Main2ndTex_Cull == 1 && fd.facing > 0 || _Main2ndTex_Cull == 2 && fd.facing < 0) color2nd.a = 0;
+            #if LIL_RENDER != 0
+                if(_Main2ndTexAlphaMode != 0)
+                {
+                    if(_Main2ndTexAlphaMode == 1) fd.col.a = color2nd.a;
+                    if(_Main2ndTexAlphaMode == 2) fd.col.a = fd.col.a * color2nd.a;
+                    if(_Main2ndTexAlphaMode == 3) fd.col.a = saturate(fd.col.a + color2nd.a);
+                    if(_Main2ndTexAlphaMode == 4) fd.col.a = saturate(fd.col.a - color2nd.a);
+                    color2nd.a = 1;
+                }
+            #endif
+            fd.col.rgb -= fd.col.rgb;
+            fd.col.rgb = lilBlendColor(fd.col.rgb, color2nd.rgb, color2nd.a * _Main2ndEnableLighting, _Main2ndTexBlendMode);
+            }
+
+        }
+        else if(!_UseMirrorTex && _UseMain2ndTex)
         {
             float2 uv2nd = fd.uv0;
             if(_Main2ndTex_UVMode == 1) uv2nd = fd.uv1;
@@ -790,8 +867,10 @@
                     color2nd.a = 1;
                 }
             #endif
+            //fd.col.rgb -= fd.col.rgb;
             fd.col.rgb = lilBlendColor(fd.col.rgb, color2nd.rgb, color2nd.a * _Main2ndEnableLighting, _Main2ndTexBlendMode);
         }
+        
     }
 #endif
 

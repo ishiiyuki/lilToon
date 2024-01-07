@@ -310,7 +310,7 @@ namespace lilToon
         private readonly lilMaterialProperty onlyMirror = new lilMaterialProperty("_OnlyMirror", PropertyBlock.Base);
         private readonly lilMaterialProperty onlyCamera = new lilMaterialProperty("_OnlyCamera", PropertyBlock.Base);
         private readonly lilMaterialProperty useMirrorTex = new lilMaterialProperty("_UseMirrorTex", PropertyBlock.Base);
-
+        private readonly lilMaterialProperty mainMirrorTex                = new lilMaterialProperty("_MainMirrorTex", true,PropertyBlock.Base);
 
         private readonly lilMaterialProperty cutoff                 = new lilMaterialProperty("_Cutoff", PropertyBlock.Base);
         private readonly lilMaterialProperty preColor               = new lilMaterialProperty("_PreColor", PropertyBlock.Base);
@@ -347,6 +347,7 @@ namespace lilToon
         private readonly lilMaterialProperty mainGradationStrength  = new lilMaterialProperty("_MainGradationStrength", PropertyBlock.MainColor, PropertyBlock.MainColor1st);
         private readonly lilMaterialProperty mainGradationTex       = new lilMaterialProperty("_MainGradationTex", true, PropertyBlock.MainColor, PropertyBlock.MainColor1st);
         private readonly lilMaterialProperty mainColorAdjustMask    = new lilMaterialProperty("_MainColorAdjustMask", true, PropertyBlock.MainColor, PropertyBlock.MainColor1st);
+
         //
 
         //
@@ -915,6 +916,9 @@ namespace lilToon
                 invisible,
                 noMirror,
                 noCamera,
+                onlyMirror,
+                onlyCamera,
+                useMirrorTex,
                 cutoff,
                 preColor,
                 preOutType,
@@ -950,6 +954,7 @@ namespace lilToon
                 mainGradationStrength,
                 mainGradationTex,
                 mainColorAdjustMask,
+                mainMirrorTex,
                 //
                 
                 //
@@ -1658,6 +1663,7 @@ namespace lilToon
                             EditorGUILayout.LabelField(sMainColorBranch, customToggleFont);
                             EditorGUILayout.BeginVertical(boxInnerHalf);
                             LocalizedPropertyTexture(mainColorRGBAContent, mainTex, mainColor);
+                            //LocalizedPropertyTexture(mainColorRGBAContent, mainMirrorTex, mainColor);
                             EditorGUILayout.EndVertical();
                             EditorGUILayout.EndVertical();
                         //}
@@ -1671,6 +1677,7 @@ namespace lilToon
                             EditorGUILayout.LabelField(sMainColorBranch, customToggleFont);
                             EditorGUILayout.BeginVertical(boxInnerHalf);
                             LocalizedPropertyTexture(mainColorRGBAContent, mainTex, mainColor);
+                            //LocalizedPropertyTexture(mainColorRGBAContent, mainMirrorTex, mainColor);
                             lilEditorGUI.DrawLine();
                             DrawMainAdjustSettings(material);
                             EditorGUILayout.EndVertical();
@@ -4172,6 +4179,8 @@ namespace lilToon
             liteMaterial.SetFloat("_NoCamera", noCamera.floatValue);
             liteMaterial.SetFloat("_OnlyMirror", onlyMirror.floatValue);
             liteMaterial.SetFloat("_OnlyCamera", onlyCamera.floatValue);
+            liteMaterial.SetFloat("_UseMirrorTex", useMirrorTex.floatValue);
+
 
             liteMaterial.SetFloat("_Cutoff",                    cutoff.floatValue);
             liteMaterial.SetFloat("_SubpassCutoff",             subpassCutoff.floatValue);
@@ -4179,15 +4188,13 @@ namespace lilToon
             liteMaterial.SetFloat("_FlipNormal",                flipNormal.floatValue);
             liteMaterial.SetFloat("_BackfaceForceShadow",       backfaceForceShadow.floatValue);
 
-            liteMaterial.SetFloat("_UseMirrorTex", useMirrorTex.floatValue);
-
 
             liteMaterial.SetColor("_Color",                     mainColor.colorValue);
             liteMaterial.SetVector("_MainTex_ScrollRotate",     mainTex_ScrollRotate.vectorValue);
 
             var bakedMainTex = AutoBakeMainTexture(material);
             liteMaterial.SetTexture("_MainTex", bakedMainTex);
-
+            liteMaterial.SetTexture("_MainMirrorTex", bakedMainTex);
             var mainScale = material.GetTextureScale(mainTex.name);
             var mainOffset = material.GetTextureOffset(mainTex.name);
             liteMaterial.SetTextureScale(mainTex.name, mainScale);
@@ -4509,7 +4516,10 @@ namespace lilToon
                     //プロパティ　トグルにnoMirrorをついあk
                     LocalizedProperty(noMirror);
                     LocalizedProperty(noCamera);
-                    //LocalizedProperty(useMirrorTex);
+                    LocalizedProperty(onlyMirror);
+                    LocalizedProperty(onlyCamera);
+                    LocalizedProperty(useMirrorTex);
+                    LocalizedProperty(mainMirrorTex);
 
 
                     if (zwrite.floatValue != 1.0f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))

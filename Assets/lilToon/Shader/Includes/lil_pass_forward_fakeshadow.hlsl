@@ -76,6 +76,9 @@ float4 frag(v2f input) : SV_Target
     #if defined(LIL_HDRP)
         fd.V = normalize(lilViewDirection(fd.positionWS));
     #endif
+
+
+
     fd.col = LIL_SAMPLE_2D(_MainTex, sampler_MainTex, fd.uv0);
     fd.col *= _Color;
     LIL_HDRP_DEEXPOSURE(fd.col);

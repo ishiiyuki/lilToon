@@ -9,7 +9,9 @@ Shader "Hidden/lilToonCutoutOutline"
         [lilToggle]     _NoCamera                  ("sNoCamera", Int) = 0
         [lilToggle]     _OnlyMirror                  ("sOnlyMirror", Int) = 0
         [lilToggle]     _OnlyCamera                  ("sOnlyCamera", Int) = 0
+         _MainMirrorTex              ("Texture", 2D) = "white" {}
 
+        [lilToggle]     _UseMirrorTex("sMirrorTex", Int) = 0
                         _AsUnlit                    ("sAsUnlit", Range(0, 1)) = 0
                         _Cutoff                     ("sCutoff", Range(-0.001,1.001)) = 0.5
                         _SubpassCutoff              ("sSubpassCutoff", Range(0,1)) = 0.5
@@ -34,6 +36,7 @@ Shader "Hidden/lilToonCutoutOutline"
         // Main
         [lilHDR] [MainColor] _Color                 ("sColor", Color) = (1,1,1,1)
         [MainTexture]   _MainTex                    ("Texture", 2D) = "white" {}
+                        
         [lilUVAnim]     _MainTex_ScrollRotate       ("sScrollRotates", Vector) = (0,0,0,0)
         [lilHSVG]       _MainTexHSVG                ("sHSVGs", Vector) = (0,1,1,1)
                         _MainGradationStrength      ("Gradation Strength", Range(0, 1)) = 0

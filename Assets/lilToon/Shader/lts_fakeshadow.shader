@@ -9,6 +9,8 @@ Shader "_lil/[Optional] lilToonFakeShadow"
         [lilToggle]     _NoCamera                  ("sNoCamera", Int) = 0
         [lilToggle]     _OnlyMirror                  ("sOnlyMirror", Int) = 0
         [lilToggle]     _OnlyCamera                  ("sOnlyCamera", Int) = 0
+[lilToggle]     _UseMirrorTex("sMirrorTex", Int) = 0
+_MainMirrorTex              ("Texture", 2D) = "white" {}
 
         //----------------------------------------------------------------------------------------------------------------------
         // Main

@@ -618,9 +618,11 @@ lilBool _NoMirror;
 lilBool _NoCamera;
 lilBool _OnlyMirror;
 lilBool _OnlyCamera;
+lilBool _UseMirrorTex;
 #if defined(LIL_FEATURE_MAIN2ND)
     lilBool _UseMain2ndTex;
     lilBool _Main2ndTexIsMSDF;
+    
     #if defined(LIL_FEATURE_DECAL)
         lilBool _Main2ndTexIsDecal;
         lilBool _Main2ndTexIsLeftOnly;

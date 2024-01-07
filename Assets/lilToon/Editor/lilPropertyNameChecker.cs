@@ -47,6 +47,7 @@ namespace lilToon
             res = res || name == "_OnlyMirror";
             res = res || name == "_OnlyCamera";
             res = res || name == "_UseMirrorTex";
+            res = res || name == "_MainMirrorTex";
             res = res || name == "_Cutoff";
             res = res || name == "_FlipNormal";
             res = res || name == "_BackfaceForceShadow";

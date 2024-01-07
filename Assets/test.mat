@@ -397,6 +397,7 @@ Material:
     - _IDMask6: 0
     - _IDMask7: 0
     - _IDMask8: 0
+    - _IDMaskControlsDissolve: 0
     - _IDMaskFrom: 8
     - _IDMaskIndex1: 0
     - _IDMaskIndex2: 0
@@ -406,6 +407,15 @@ Material:
     - _IDMaskIndex6: 0
     - _IDMaskIndex7: 0
     - _IDMaskIndex8: 0
+    - _IDMaskIsBitmap: 0
+    - _IDMaskPrior1: 0
+    - _IDMaskPrior2: 0
+    - _IDMaskPrior3: 0
+    - _IDMaskPrior4: 0
+    - _IDMaskPrior5: 0
+    - _IDMaskPrior6: 0
+    - _IDMaskPrior7: 0
+    - _IDMaskPrior8: 0
     - _IgnoreEncryption: 0
     - _Invisible: 0
     - _LightMaxLimit: 1
@@ -476,6 +486,8 @@ Material:
     - _OcclusionStrength: 1
     - _OffsetFactor: 0
     - _OffsetUnits: 0
+    - _OnlyCamera: 0
+    - _OnlyMirror: 0
     - _OutlineAlphaToMask: 0
     - _OutlineBlendOp: 0
     - _OutlineBlendOpAlpha: 0
@@ -633,6 +645,7 @@ Material:
     - _UseMain3rdTex: 0
     - _UseMatCap: 0
     - _UseMatCap2nd: 0
+    - _UseMirrorTex: 0
     - _UseOutline: 0
     - _UsePOM: 0
     - _UseParallax: 0

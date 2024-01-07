@@ -9,8 +9,8 @@
 #if !defined(LIL_CUSTOM_V2F_MEMBER)
     #define LIL_CUSTOM_V2F_MEMBER(id0,id1,id2,id3,id4,id5,id6,id7)
 #endif
-uniform float _VRChatMirrorMode;
-uniform float _VRChatCameraMode;
+//uniform float _VRChatMirrorMode;
+//uniform float _VRChatCameraMode;
 
 bool IsInVRCCamera() {
     return (_ScreenParams.x == 1280 &&
@@ -180,6 +180,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
 
     BEFORE_UNPACK_V2F
     OVERRIDE_UNPACK_V2F
+    
     LIL_COPY_VFACE(fd.facing);
     LIL_GET_HDRPDATA(input,fd);
     #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD)
@@ -273,6 +274,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
         // Premultiply
         LIL_PREMULTIPLY
     #else
+    
         //------------------------------------------------------------------------------------------------------------------------------
         // UV
         BEFORE_ANIMATE_MAIN_UV
@@ -301,7 +303,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
         BEFORE_MAIN2ND
         #if defined(LIL_FEATURE_MAIN2ND)
             float main2ndDissolveAlpha = 0.0;
-            float4 color2nd = 1.0;
+            float4 color2nd = 0.0;
             OVERRIDE_MAIN2ND
         #endif
 
@@ -464,7 +466,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
             #endif
 
             #if defined(LIL_FEATURE_MAIN2ND)
-                if(_UseMain2ndTex) fd.col.rgb = lerp(fd.col.rgb, 0, color2nd.a - color2nd.a * _Main2ndEnableLighting);
+               if(_UseMain2ndTex) fd.col.rgb = lerp(fd.col.rgb, 0, color2nd.a - color2nd.a * _Main2ndEnableLighting);
             #endif
             #if defined(LIL_FEATURE_MAIN3RD)
                 if(_UseMain3rdTex) fd.col.rgb = lerp(fd.col.rgb, 0, color3rd.a - color3rd.a * _Main3rdEnableLighting);
@@ -565,10 +567,13 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
             OVERRIDE_BLEND_EMISSION
         #endif
 
+        
         //------------------------------------------------------------------------------------------------------------------------------
         // Backface Color
         fd.col.rgb = (fd.facing < 0.0) ? lerp(fd.col.rgb, _BackfaceColor.rgb * fd.lightColor, _BackfaceColor.a) : fd.col.rgb;
     #endif
+
+    
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Distance Fade

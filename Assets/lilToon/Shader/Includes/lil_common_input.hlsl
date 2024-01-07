@@ -1,6 +1,9 @@
 #ifndef LIL_INPUT_INCLUDED
 #define LIL_INPUT_INCLUDED
 
+
+uniform float _VRChatMirrorMode;
+uniform float _VRChatCameraMode;
 //------------------------------------------------------------------------------------------------------------------------------
 // Variables from Unity
 #if !defined(SHADER_API_GLES)
@@ -100,6 +103,7 @@ SAMPLER(lil_sampler_linear_clamp);
 
 #ifndef LIL_INPUT_BASE_INCLUDED
 
+
 CBUFFER_START(UnityPerMaterial)
 #if defined(LIL_LITE)
     float4  _LightDirectionOverride;
@@ -160,6 +164,7 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _NoCamera;
     lilBool _OnlyMirror;
     lilBool _OnlyCamera;
+    lilBool _UseMirrorTex;
     lilBool _UseShadow;
     lilBool _UseMatCap;
     lilBool _MatCapMul;
@@ -180,6 +185,7 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _NoCamera;
     lilBool _OnlyMirror;
     lilBool _OnlyCamera;
+    lilBool _UseMirrorTex;
     #if defined(LIL_FEATURE_ENCRYPTION)
         lilBool _IgnoreEncryption;
     #endif
@@ -220,6 +226,7 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _Main3rdTexShouldFlipMirror;
     lilBool _Main3rdTexShouldFlipCopy;
     lilBool _Main3rdTexIsMSDF;
+    lilBool _UseMirrorTex;
 #elif defined(LIL_MULTI)
     float4  _LightDirectionOverride;
     float4  _BackfaceColor;
@@ -696,6 +703,7 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _NoCamera;
     lilBool _OnlyMirror;
     lilBool _OnlyCamera;
+    lilBool _UseMirrorTex;
     lilBool _UseClippingCanceller;
     #if defined(LIL_MULTI_INPUTS_MAIN2ND)
         lilBool _Main2ndTexIsMSDF;
@@ -858,6 +866,7 @@ TEXTURE2D(_FurMask);
 TEXTURE2D(_FurLengthMask);
 TEXTURE2D(_FurVectorTex);
 TEXTURE2D(_TriMask);
+TEXTURE2D(_MainMirrorTex);
 SAMPLER(sampler_MainTex);
 SAMPLER(sampler_Main2ndTex);
 SAMPLER(sampler_Main3rdTex);
@@ -865,7 +874,6 @@ SAMPLER(sampler_EmissionMap);
 SAMPLER(sampler_Emission2ndMap);
 SAMPLER(sampler_AudioLinkMask);
 SAMPLER(sampler_OutlineTex);
-
 // AudioLink
 #if defined(LIL_FEATURE_AUDIOLINK)
 TEXTURE2D_FLOAT(_AudioTexture);
