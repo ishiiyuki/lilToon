@@ -481,6 +481,14 @@ float   _AAStrength;
     float   _IDMask6;
     float   _IDMask7;
     float   _IDMask8;
+    float   _IDMaskPrior1;
+    float   _IDMaskPrior2;
+    float   _IDMaskPrior3;
+    float   _IDMaskPrior4;
+    float   _IDMaskPrior5;
+    float   _IDMaskPrior6;
+    float   _IDMaskPrior7;
+    float   _IDMaskPrior8;
 #endif
 float   _lilShadowCasterBias;
 
@@ -536,6 +544,8 @@ float   _lilShadowCasterBias;
     int     _IDMaskIndex7;
     int     _IDMaskIndex8;
     uint    _IDMaskFrom;
+    uint    _IDMaskIsBitmap;
+    uint    _IDMaskControlsDissolve;
 #endif
 uint    _Cull;
 #if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)

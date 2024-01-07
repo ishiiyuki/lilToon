@@ -74,6 +74,10 @@
     #define BEFORE_SHADOW
 #endif
 
+#if !defined(BEFORE_RIMSHADE)
+    #define BEFORE_RIMSHADE
+#endif
+
 #if !defined(BEFORE_BACKLIGHT)
     #define BEFORE_BACKLIGHT
 #endif
@@ -178,7 +182,10 @@
 #endif
 
 #if defined(LIL_V2F_POSITION_OS)
-    #define LIL_UNPACK_POSITION_OS(i,o) o.positionOS = i.positionOS;
+    #define LIL_UNPACK_POSITION_OS(i,o) \
+        o.positionOS = i.positionOSdissolve.xyz; \
+        o.dissolveActive = ((int)round(i.positionOSdissolve.w)) & 1; \
+        o.dissolveInvert = ((int)round(i.positionOSdissolve.w)) & 2;
 #else
     #define LIL_UNPACK_POSITION_OS(i,o)
 #endif
@@ -1237,6 +1244,39 @@
 #if !defined(OVERRIDE_SHADOW)
     #define OVERRIDE_SHADOW \
         lilGetShading(fd LIL_SAMP_IN(sampler_MainTex));
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Rim Shade
+#if defined(LIL_FEATURE_RIMSHADE)
+    void lilGetRimShade(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    {
+        if(_UseRimShade)
+        {
+            float3 N = fd.N;
+            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+                N = lerp(fd.origN, fd.N, _RimShadeNormalStrength);
+            #endif
+            float nvabs = abs(dot(N,fd.headV));
+            float rim = pow(saturate(1.0 - nvabs), _RimShadeFresnelPower);
+            rim = lilTooningScale(_AAStrength, rim, _RimShadeBorder, _RimShadeBlur);
+            rim *= _RimShadeColor.a;
+            #if defined(LIL_FEATURE_ShadowColorTex)
+                rim *= LIL_SAMPLE_2D(_RimShadeMask, samp, fd.uvMain).r;
+            #endif
+            fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * _RimShadeColor.rgb, rim);
+        }
+    }
+#endif
+
+#if !defined(OVERRIDE_RIMSHADE)
+    #if defined(LIL_LITE)
+        #define OVERRIDE_RIMSHADE \
+            lilGetRimShade(fd);
+    #else
+        #define OVERRIDE_RIMSHADE \
+            lilGetRimShade(fd LIL_SAMP_IN(sampler_MainTex));
+    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

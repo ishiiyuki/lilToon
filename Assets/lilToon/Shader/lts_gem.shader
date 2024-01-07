@@ -200,6 +200,16 @@ Shader "Hidden/lilToonGem"
                         _ShadowFlatBlur             ("sBlur", Range(0.001, 2)) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
+        // Rim Shade
+        [lilToggleLeft] _UseRimShade                ("RimShade", Int) = 0
+                        _RimShadeColor              ("sColor", Color) = (0.5,0.5,0.5,1.0)
+        [NoScaleOffset] _RimShadeMask               ("Mask", 2D) = "white" {}
+                        _RimShadeNormalStrength     ("sNormalStrength", Range(0, 1)) = 1.0
+                        _RimShadeBorder             ("sBorder", Range(0, 1)) = 0.5
+                        _RimShadeBlur               ("sBlur", Range(0, 1)) = 1.0
+        [PowerSlider(3.0)]_RimShadeFresnelPower     ("sFresnelPower", Range(0.01, 50)) = 1.0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Reflection
         [lilToggleLeft] _UseReflection              ("sReflection", Int) = 0
         // Smoothness
@@ -451,6 +461,11 @@ Shader "Hidden/lilToonGem"
 
         //----------------------------------------------------------------------------------------------------------------------
         // ID Mask
+        // _IDMaskCompile will enable compilation of IDMask-related systems. For compatibility, setting certain
+        // parameters to non-zero values will also enable the IDMask feature, but this enable switch ensures that
+        // animator-controlled IDMasked meshes will be compiled correctly. Note that this _only_ controls compilation,
+        // and is ignored at runtime.
+        [ToggleUI]      _IDMaskCompile              ("_IDMaskCompile", Int) = 0
         [lilEnum]       _IDMaskFrom                 ("_IDMaskFrom|0: UV0|1: UV1|2: UV2|3: UV3|4: UV4|5: UV5|6: UV6|7: UV7|8: VertexID", Int) = 8
         [ToggleUI]      _IDMask1                    ("_IDMask1", Int) = 0
         [ToggleUI]      _IDMask2                    ("_IDMask2", Int) = 0
@@ -460,6 +475,7 @@ Shader "Hidden/lilToonGem"
         [ToggleUI]      _IDMask6                    ("_IDMask6", Int) = 0
         [ToggleUI]      _IDMask7                    ("_IDMask7", Int) = 0
         [ToggleUI]      _IDMask8                    ("_IDMask8", Int) = 0
+        [ToggleUI]      _IDMaskIsBitmap             ("_IDMaskIsBitmap", Int) = 0
                         _IDMaskIndex1               ("_IDMaskIndex1", Int) = 0
                         _IDMaskIndex2               ("_IDMaskIndex2", Int) = 0
                         _IDMaskIndex3               ("_IDMaskIndex3", Int) = 0
@@ -468,6 +484,16 @@ Shader "Hidden/lilToonGem"
                         _IDMaskIndex6               ("_IDMaskIndex6", Int) = 0
                         _IDMaskIndex7               ("_IDMaskIndex7", Int) = 0
                         _IDMaskIndex8               ("_IDMaskIndex8", Int) = 0
+
+        [ToggleUI]      _IDMaskControlsDissolve     ("_IDMaskControlsDissolve", Int) = 0
+        [ToggleUI]      _IDMaskPrior1               ("_IDMaskPrior1", Int) = 0
+        [ToggleUI]      _IDMaskPrior2               ("_IDMaskPrior2", Int) = 0
+        [ToggleUI]      _IDMaskPrior3               ("_IDMaskPrior3", Int) = 0
+        [ToggleUI]      _IDMaskPrior4               ("_IDMaskPrior4", Int) = 0
+        [ToggleUI]      _IDMaskPrior5               ("_IDMaskPrior5", Int) = 0
+        [ToggleUI]      _IDMaskPrior6               ("_IDMaskPrior6", Int) = 0
+        [ToggleUI]      _IDMaskPrior7               ("_IDMaskPrior7", Int) = 0
+        [ToggleUI]      _IDMaskPrior8               ("_IDMaskPrior8", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Encryption
@@ -548,7 +574,7 @@ Shader "Hidden/lilToonGem"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 35
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 39
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -617,6 +643,7 @@ Shader "Hidden/lilToonGem"
             #define LIL_FEATURE_RECEIVE_SHADOW
             #define LIL_FEATURE_SHADOW_3RD
             #define LIL_FEATURE_SHADOW_LUT
+            #define LIL_FEATURE_RIMSHADE
             #define LIL_FEATURE_EMISSION_1ST
             #define LIL_FEATURE_EMISSION_2ND
             #define LIL_FEATURE_ANIMATE_EMISSION_UV

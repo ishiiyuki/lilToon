@@ -129,6 +129,14 @@ namespace lilToon
             return res;
         }
 
+        public static bool IsRimShadeProperty(string name)
+        {
+            bool res = false;
+            res = res || name == "_UseRimShade";
+            res = res || name.Contains("_RimShade");
+            return res;
+        }
+
         public static bool IsEmissionProperty(string name)
         {
             bool res = false;

@@ -21,7 +21,7 @@ bool IsInVRCCamera() {
     #define LIL_V2F_POSITION_CS
     #define LIL_V2F_PACKED_TEXCOORD01
     #define LIL_V2F_PACKED_TEXCOORD23
-    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS)
+    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS) || defined(LIL_FEATURE_IDMASK)
         #define LIL_V2F_POSITION_OS
     #endif
     #if defined(LIL_V2F_FORCE_POSITION_WS) || defined(LIL_PASS_FORWARDADD) || defined(LIL_FEATURE_OUTLINE_RECEIVE_SHADOW) || defined(LIL_FEATURE_DISTANCE_FADE) || !defined(LIL_BRP) || defined(LIL_USE_LPPV)
@@ -45,7 +45,7 @@ bool IsInVRCCamera() {
         float4 uv01         : TEXCOORD0;
         float4 uv23         : TEXCOORD1;
         #if defined(LIL_V2F_POSITION_OS)
-            float3 positionOS   : TEXCOORD2;
+            float4 positionOSdissolve   : TEXCOORD2;
         #endif
         #if defined(LIL_V2F_POSITION_WS)
             float3 positionWS   : TEXCOORD3;
@@ -67,7 +67,7 @@ bool IsInVRCCamera() {
     #define LIL_V2F_POSITION_CS
     #define LIL_V2F_PACKED_TEXCOORD01
     #define LIL_V2F_PACKED_TEXCOORD23
-    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS)
+    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS) || defined(LIL_FEATURE_IDMASK)
         #define LIL_V2F_POSITION_OS
     #endif
     #if defined(LIL_V2F_FORCE_POSITION_WS) || defined(LIL_SHOULD_POSITION_WS)
@@ -97,7 +97,7 @@ bool IsInVRCCamera() {
         float4 uv01         : TEXCOORD0;
         float4 uv23         : TEXCOORD1;
         #if defined(LIL_V2F_POSITION_OS)
-            float3 positionOS   : TEXCOORD2;
+            float4 positionOSdissolve   : TEXCOORD2;
         #endif
         #if defined(LIL_V2F_POSITION_WS)
             float3 positionWS   : TEXCOORD3;
@@ -227,7 +227,18 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
         BEFORE_DISSOLVE
         #if defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
             float dissolveAlpha = 0.0;
-            OVERRIDE_DISSOLVE
+            if (fd.dissolveActive)
+            {
+                float priorAlpha = fd.col.a;
+                fd.col.a = 1.0f;
+                OVERRIDE_DISSOLVE
+                if (fd.dissolveInvert)
+                {
+                    fd.col.a = 1.0f - fd.col.a;
+                }
+                
+                fd.col.a *= priorAlpha;
+            }
         #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
@@ -327,7 +338,18 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
         BEFORE_DISSOLVE
         #if defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
             float dissolveAlpha = 0.0;
-            OVERRIDE_DISSOLVE
+            if (fd.dissolveActive)
+            {
+                float priorAlpha = fd.col.a;
+                fd.col.a = 1.0f;
+                OVERRIDE_DISSOLVE
+                if (fd.dissolveInvert)
+                {
+                    fd.col.a = 1.0f - fd.col.a;
+                }
+                        
+                fd.col.a *= priorAlpha;
+            }
         #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
@@ -471,6 +493,13 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
             #if defined(LIL_FEATURE_MAIN3RD)
                 if(_UseMain3rdTex) fd.col.rgb = lerp(fd.col.rgb, 0, color3rd.a - color3rd.a * _Main3rdEnableLighting);
             #endif
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Rim Shade
+        BEFORE_RIMSHADE
+        #if defined(LIL_FEATURE_RIMSHADE)
+            OVERRIDE_RIMSHADE
         #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
