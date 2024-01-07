@@ -4614,7 +4614,7 @@ namespace lilToon
                     LocalizedProperty(onlyMirror);
                     LocalizedProperty(onlyCamera);
                     LocalizedProperty(useMirrorTex);
-                    LocalizedProperty(mainMirrorTex);
+                    //LocalizedProperty(mainMirrorTex);
 
 
                     if (zwrite.floatValue != 1.0f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
