@@ -89,7 +89,7 @@ Shader "_lil/[Optional] lilToonFakeShadow"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 39
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 42
     }
 
     SubShader
@@ -134,6 +134,7 @@ Shader "_lil/[Optional] lilToonFakeShadow"
             #define LIL_FEATURE_DISSOLVE
             #define LIL_FEATURE_DITHER
             #define LIL_FEATURE_IDMASK
+            #define LIL_FEATURE_UDIMDISCARD
             #define LIL_FEATURE_OUTLINE_TONE_CORRECTION
             #define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW
             #define LIL_FEATURE_ANIMATE_OUTLINE_UV

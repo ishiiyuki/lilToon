@@ -712,6 +712,13 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
+// UDIM Discard
+#if !defined(OVERRIDE_UDIMDISCARD)
+    #define OVERRIDE_UDIMDISCARD \
+        if(_UDIMDiscardMode == 1 && LIL_CHECK_UDIMDISCARD(fd)) discard;
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------
 // Main 2nd
 #if defined(LIL_FEATURE_MAIN2ND) && !defined(LIL_LITE)
     void lilGetMain2nd(inout lilFragData fd, inout float4 color2nd, inout float main2ndDissolveAlpha LIL_SAMP_IN_FUNC(samp))

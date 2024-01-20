@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2024-01-18
+### 修正
+- Unity 2019でトグルがうまく動作しないのを修正
+
+## [1.7.1] - 2024-01-17
+### 修正
+- UIの不具合を修正
+
+## [1.7.0] - 2024-01-17
+### 追加
+- UV Tile Discardを追加
+
+### 修正
+- マテリアルのバージョン取得が正しくなかったのを修正
+- lilcontainerにシェーダーコードのテキストを追加
+
 ## [1.6.0] - 2023-12-31
 ### 追加
 - RimShadeを追加

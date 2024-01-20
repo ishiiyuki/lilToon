@@ -84,7 +84,7 @@ LIL_V2F_TYPE vert(appdata input)
     #endif
 
     #undef LIL_VERTEX_CONDITION
-
+    
     //------------------------------------------------------------------------------------------------------------------------------
     // Single Pass Instanced rendering
     LIL_SETUP_INSTANCE_ID(input);
@@ -414,6 +414,20 @@ LIL_V2F_TYPE vert(appdata input)
         #endif
     #endif
 
+    //------------------------------------------------------------------------------------------------------------------------------
+    // UDIM Discard
+    #if defined(LIL_FEATURE_UDIMDISCARD) && !defined(LIL_LITE)
+        if(_UDIMDiscardMode == 0 && _UDIMDiscardCompile == 1 && LIL_CHECK_UDIMDISCARD(input)) // Discard Vertices instead of just pixels
+        {
+            #if defined(LIL_V2F_POSITION_CS)
+                LIL_V2F_OUT_BASE.positionCS = 0.0/0.0;
+            #endif
+            #if defined(LIL_ONEPASS_OUTLINE)
+                LIL_V2F_OUT.positionCSOL = 0.0/0.0;
+            #endif
+        }
+    #endif
+
     #if defined(LIL_V2F_POSITION_OS)
     LIL_V2F_OUT_BASE.positionOSdissolve.w = (dissolveActive | (dissolveInvert << 1));
     #endif
@@ -421,7 +435,7 @@ LIL_V2F_TYPE vert(appdata input)
     #if !defined(SHADER_STAGE_VERTEX) || defined(LIL_CUSTOM_SAFEVERT)
         }
     #endif
-
+    
     return LIL_V2F_OUT;
 }
 
