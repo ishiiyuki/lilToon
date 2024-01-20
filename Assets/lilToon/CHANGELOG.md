@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2024-01-18
+### Fixed
+- Toggle doesn't work well in Unity 2019
+
+## [1.7.1] - 2024-01-17
+### Fixed
+- UI Error
+
+## [1.7.0] - 2024-01-17
+### Added
+- UV Tile Discard feature
+
+### Fixed
+- Incorrect material versioning
+- Add shader code text asset to lilcontainer
+
 ## [1.6.0] - 2023-12-31
 ### Added
 - RimShade feature

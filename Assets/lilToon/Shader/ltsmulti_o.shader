@@ -3,6 +3,18 @@ Shader "Hidden/lilToonMultiOutline"
     Properties
     {
         //----------------------------------------------------------------------------------------------------------------------
+        // Dummy
+        _DummyProperty ("If you are seeing this, some script is broken.", Float) = 0
+        _DummyProperty ("This also happens if something other than lilToon is broken.", Float) = 0
+        _DummyProperty ("You need to check the error on the console and take appropriate action, such as reinstalling the relevant tool.", Float) = 0
+        _DummyProperty (" ", Float) = 0
+        _DummyProperty ("これが表示されている場合、なんらかのスクリプトが壊れています。", Float) = 0
+        _DummyProperty ("これはlilToon以外のものが壊れている場合にも発生します。", Float) = 0
+        _DummyProperty ("コンソールでエラーを確認し、該当するツールを入れ直すなどの対処を行う必要があります。", Float) = 0
+        [Space(1000)]
+        _DummyProperty ("", Float) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Base
         [lilToggle]     _Invisible                  ("sInvisible", Int) = 0
         [lilToggle]     _NoMirror                  ("sNoMirror", Int) = 0
@@ -496,6 +508,28 @@ Shader "Hidden/lilToonMultiOutline"
         [ToggleUI]      _IDMaskPrior8               ("_IDMaskPrior8", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
+        // UDIM Discard
+        [lilToggleLeft] _UDIMDiscardCompile         ("sUDIMDiscard", Int) = 0
+        [lilEnum]       _UDIMDiscardUV              ("sUDIMDiscardUV|0: UV0|1: UV1|2: UV2|3: UV3", Int) = 0
+        [lilEnum]       _UDIMDiscardMode            ("sUDIMDiscardMode|0: Vertex|1: Pixel (slower)", Int) = 0
+        [lilToggle]     _UDIMDiscardRow3_3          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow3_2          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow3_1          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow3_0          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow2_3          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow2_2          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow2_1          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow2_0          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow1_3          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow1_2          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow1_1          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow1_0          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow0_3          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow0_2          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow0_1          ("", Int) = 0
+        [lilToggle]     _UDIMDiscardRow0_0          ("", Int) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Encryption
         [lilToggle]     _IgnoreEncryption           ("sIgnoreEncryption", Int) = 0
                         _Keys                       ("sKeys", Vector) = (0,0,0,0)
@@ -574,7 +608,7 @@ Shader "Hidden/lilToonMultiOutline"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 39
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 42
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -668,6 +702,7 @@ Shader "Hidden/lilToonMultiOutline"
             #define LIL_MULTI_INPUTS_DISSOLVE
             #define LIL_MULTI_INPUTS_DITHER
             #define LIL_MULTI_INPUTS_IDMASK
+            #define LIL_MULTI_INPUTS_UDIMDISCARD
             #define LIL_MULTI_INPUTS_OUTLINE
 
             #pragma skip_variants DECALS_OFF DECALS_3RT DECALS_4RT DECAL_SURFACE_GRADIENT _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
