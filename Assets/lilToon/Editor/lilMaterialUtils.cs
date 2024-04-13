@@ -471,6 +471,30 @@ namespace lilToon
             SetShaderKeywords(material, "BILLBOARD_FACE_CAMERA_POS",            false);
         }
 
+        public static void SetupMultiMaterial(Material[] materials, AnimationClip[] clips)
+        {
+            var ms = materials.Where(m => m.shader.name.Contains("Multi")).ToArray();
+            foreach(var binding in clips.SelectMany(c => AnimationUtility.GetCurveBindings(c)).ToArray())
+            {
+                string propname = binding.propertyName;
+                if(string.IsNullOrEmpty(propname) || !propname.Contains("material.")) continue;
+
+                void Set(string name, string keyword)
+                {
+                    if(propname.Contains(name))
+                        foreach(var m in ms)
+                        {
+                            m.EnableKeyword(keyword);
+                            EditorUtility.SetDirty(m);
+                        }
+                }
+                Set("_RimDirStrength", "GEOM_TYPE_LEAF");
+                Set("_MainTexHSVG", "EFFECT_HUE_VARIATION");
+                Set("_MainGradationStrength", "EFFECT_HUE_VARIATION");
+            }
+            AssetDatabase.SaveAssets();
+        }
+
         private static bool IsFeatureOnFloat(Material material, string propname)
         {
             if(material.HasProperty(propname)) return material.GetFloat(propname) != 0.0f;
@@ -597,6 +621,7 @@ namespace lilToon
                     material.SetTexture("_SmoothnessTex", null);
                     material.SetTexture("_MetallicGlossMap", null);
                     material.SetTexture("_ReflectionColorTex", null);
+                    material.SetTexture("_ReflectionCubeTex", null);
                 }
                 if(material.GetFloat("_UseMatCap") == 0.0f)
                 {
@@ -607,6 +632,12 @@ namespace lilToon
                 {
                     material.SetTexture("_MatCap2ndTex", null);
                     material.SetTexture("_MatCap2ndBlendMask", null);
+                }
+                if(!material.shader.name.Contains("Outline"))
+                {
+                    material.SetTexture("_OutlineTex", null);
+                    material.SetTexture("_OutlineWidthMask", null);
+                    material.SetTexture("_OutlineVectorTex", null);
                 }
                 if(material.GetFloat("_UseRim") == 0.0f) material.SetTexture("_RimColorTex", null);
                 if(material.GetFloat("_UseGlitter") == 0.0f) material.SetTexture("_GlitterColorTex", null);

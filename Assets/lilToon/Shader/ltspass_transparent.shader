@@ -606,7 +606,7 @@ Shader "Hidden/ltspass_transparent"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 42
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 43
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -776,6 +776,7 @@ Shader "Hidden/ltspass_transparent"
             #define LIL_FEATURE_ShadowColorTex
             #define LIL_FEATURE_Shadow2ndColorTex
             #define LIL_FEATURE_Shadow3rdColorTex
+            #define LIL_FEATURE_RimShadeMask
             #define LIL_FEATURE_BacklightColorTex
             #define LIL_FEATURE_SmoothnessTex
             #define LIL_FEATURE_MetallicGlossMap
