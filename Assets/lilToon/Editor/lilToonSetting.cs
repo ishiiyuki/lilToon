@@ -89,6 +89,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_ShadowColorTex = true;
     public bool LIL_FEATURE_Shadow2ndColorTex = true;
     public bool LIL_FEATURE_Shadow3rdColorTex = true;
+    public bool LIL_FEATURE_RimShadeMask = true;
     public bool LIL_FEATURE_BacklightColorTex = true;
     public bool LIL_FEATURE_SmoothnessTex = true;
     public bool LIL_FEATURE_MetallicGlossMap = true;
@@ -310,6 +311,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_ShadowColorTex = false;
         shaderSetting.LIL_FEATURE_Shadow2ndColorTex = false;
         shaderSetting.LIL_FEATURE_Shadow3rdColorTex = false;
+        shaderSetting.LIL_FEATURE_RimShadeMask = false;
         shaderSetting.LIL_FEATURE_BacklightColorTex = false;
         shaderSetting.LIL_FEATURE_SmoothnessTex = false;
         shaderSetting.LIL_FEATURE_MetallicGlossMap = false;
@@ -423,6 +425,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_ShadowColorTex = true;
             shaderSetting.LIL_FEATURE_Shadow2ndColorTex = true;
             shaderSetting.LIL_FEATURE_Shadow3rdColorTex = true;
+            shaderSetting.LIL_FEATURE_RimShadeMask = true;
             shaderSetting.LIL_FEATURE_BacklightColorTex = true;
             shaderSetting.LIL_FEATURE_SmoothnessTex = true;
             shaderSetting.LIL_FEATURE_MetallicGlossMap = true;
@@ -618,6 +621,7 @@ public class lilToonSetting : ScriptableObject
         if(shaderSetting.LIL_FEATURE_ShadowColorTex)             sb.AppendLine("#define LIL_FEATURE_ShadowColorTex");
         if(shaderSetting.LIL_FEATURE_Shadow2ndColorTex)          sb.AppendLine("#define LIL_FEATURE_Shadow2ndColorTex");
         if(shaderSetting.LIL_FEATURE_Shadow3rdColorTex)          sb.AppendLine("#define LIL_FEATURE_Shadow3rdColorTex");
+        if(shaderSetting.LIL_FEATURE_RimShadeMask)               sb.AppendLine("#define LIL_FEATURE_RimShadeMask");
         if(shaderSetting.LIL_FEATURE_BacklightColorTex)          sb.AppendLine("#define LIL_FEATURE_BacklightColorTex");
         if(shaderSetting.LIL_FEATURE_SmoothnessTex)              sb.AppendLine("#define LIL_FEATURE_SmoothnessTex");
         if(shaderSetting.LIL_FEATURE_MetallicGlossMap)           sb.AppendLine("#define LIL_FEATURE_MetallicGlossMap");
@@ -1183,6 +1187,14 @@ public class lilToonSetting : ScriptableObject
             material.HasProperty("_IDMask6") && material.GetFloat("_IDMask6") != 0.0f ||
             material.HasProperty("_IDMask7") && material.GetFloat("_IDMask7") != 0.0f ||
             material.HasProperty("_IDMask8") && material.GetFloat("_IDMask8") != 0.0f ||
+            material.HasProperty("_IDMaskPrior1") && material.GetFloat("_IDMaskPrior1") != 0.0f ||
+            material.HasProperty("_IDMaskPrior2") && material.GetFloat("_IDMaskPrior2") != 0.0f ||
+            material.HasProperty("_IDMaskPrior3") && material.GetFloat("_IDMaskPrior3") != 0.0f ||
+            material.HasProperty("_IDMaskPrior4") && material.GetFloat("_IDMaskPrior4") != 0.0f ||
+            material.HasProperty("_IDMaskPrior5") && material.GetFloat("_IDMaskPrior5") != 0.0f ||
+            material.HasProperty("_IDMaskPrior6") && material.GetFloat("_IDMaskPrior6") != 0.0f ||
+            material.HasProperty("_IDMaskPrior7") && material.GetFloat("_IDMaskPrior7") != 0.0f ||
+            material.HasProperty("_IDMaskPrior8") && material.GetFloat("_IDMaskPrior8") != 0.0f ||
             material.HasProperty("_IDMaskIsBitmap") && material.GetFloat("_IDMaskIsBitmap") != 0.0f ||
             material.HasProperty("_IDMaskCompile") && material.GetFloat("_IDMaskCompile") != 0.0f
         ))
@@ -1285,14 +1297,14 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_DITHER = shaderSetting.LIL_FEATURE_DITHER || propname.Contains("_UseDither");
 
             if(!shaderSetting.LIL_FEATURE_IDMASK && (
-                propname.Contains("_IDMask1") || propname.Contains("_IDMaskIndex1") ||
-                propname.Contains("_IDMask2") || propname.Contains("_IDMaskIndex2") ||
-                propname.Contains("_IDMask3") || propname.Contains("_IDMaskIndex3") ||
-                propname.Contains("_IDMask4") || propname.Contains("_IDMaskIndex4") ||
-                propname.Contains("_IDMask5") || propname.Contains("_IDMaskIndex5") ||
-                propname.Contains("_IDMask6") || propname.Contains("_IDMaskIndex6") ||
-                propname.Contains("_IDMask7") || propname.Contains("_IDMaskIndex7") ||
-                propname.Contains("_IDMask8") || propname.Contains("_IDMaskIndex8")
+                propname.Contains("_IDMask1") || propname.Contains("_IDMaskIndex1") || propname.Contains("_IDMaskPrior1") ||
+                propname.Contains("_IDMask2") || propname.Contains("_IDMaskIndex2") || propname.Contains("_IDMaskPrior2") ||
+                propname.Contains("_IDMask3") || propname.Contains("_IDMaskIndex3") || propname.Contains("_IDMaskPrior3") ||
+                propname.Contains("_IDMask4") || propname.Contains("_IDMaskIndex4") || propname.Contains("_IDMaskPrior4") ||
+                propname.Contains("_IDMask5") || propname.Contains("_IDMaskIndex5") || propname.Contains("_IDMaskPrior5") ||
+                propname.Contains("_IDMask6") || propname.Contains("_IDMaskIndex6") || propname.Contains("_IDMaskPrior6") ||
+                propname.Contains("_IDMask7") || propname.Contains("_IDMaskIndex7") || propname.Contains("_IDMaskPrior7") ||
+                propname.Contains("_IDMask8") || propname.Contains("_IDMaskIndex8") || propname.Contains("_IDMaskPrior8")
             ))
             {
                 shaderSetting.LIL_FEATURE_IDMASK = true;
@@ -1353,6 +1365,7 @@ public class lilToonSetting : ScriptableObject
         CheckTexture(ref shaderSetting.LIL_FEATURE_ShadowColorTex            , "_ShadowColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_Shadow2ndColorTex         , "_Shadow2ndColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_Shadow3rdColorTex         , "_Shadow3rdColorTex", material);
+        CheckTexture(ref shaderSetting.LIL_FEATURE_RimShadeMask              , "_RimShadeMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_BacklightColorTex         , "_BacklightColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_SmoothnessTex             , "_SmoothnessTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_MetallicGlossMap          , "_MetallicGlossMap", material);
@@ -1412,6 +1425,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_ShadowColorTex             = shaderSetting.LIL_FEATURE_ShadowColorTex           || propname.Contains("_ShadowColorTex");
         shaderSetting.LIL_FEATURE_Shadow2ndColorTex          = shaderSetting.LIL_FEATURE_Shadow2ndColorTex        || propname.Contains("_Shadow2ndColorTex");
         shaderSetting.LIL_FEATURE_Shadow3rdColorTex          = shaderSetting.LIL_FEATURE_Shadow3rdColorTex        || propname.Contains("_Shadow3rdColorTex");
+        shaderSetting.LIL_FEATURE_RimShadeMask               = shaderSetting.LIL_FEATURE_RimShadeMask             || propname.Contains("_RimShadeMask");
         shaderSetting.LIL_FEATURE_BacklightColorTex          = shaderSetting.LIL_FEATURE_BacklightColorTex        || propname.Contains("_BacklightColorTex");
         shaderSetting.LIL_FEATURE_SmoothnessTex              = shaderSetting.LIL_FEATURE_SmoothnessTex            || propname.Contains("_SmoothnessTex");
         shaderSetting.LIL_FEATURE_MetallicGlossMap           = shaderSetting.LIL_FEATURE_MetallicGlossMap         || propname.Contains("_MetallicGlossMap");

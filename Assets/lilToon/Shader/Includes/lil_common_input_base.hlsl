@@ -690,7 +690,7 @@ lilBool _UseMirrorTex;
     lilBool _UseShadow;
     lilBool _ShadowPostAO;
 #endif
-#if defined(LIL_FEATURE_SHADOW)
+#if defined(LIL_FEATURE_RIMSHADE)
     lilBool _UseRimShade;
 #endif
 #if defined(LIL_FEATURE_BACKLIGHT)
