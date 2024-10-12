@@ -817,6 +817,9 @@ namespace lilToon
         private readonly lilMaterialProperty furRootOffset          = new lilMaterialProperty("_FurRootOffset", PropertyBlock.Fur);
         private readonly lilMaterialProperty furCutoutLength        = new lilMaterialProperty("_FurCutoutLength", PropertyBlock.Fur);
         private readonly lilMaterialProperty furTouchStrength       = new lilMaterialProperty("_FurTouchStrength", PropertyBlock.Fur);
+        private readonly lilMaterialProperty furRimColor            = new lilMaterialProperty("_FurRimColor", PropertyBlock.Fur);
+        private readonly lilMaterialProperty furRimFresnelPower     = new lilMaterialProperty("_FurRimFresnelPower", PropertyBlock.Fur);
+        private readonly lilMaterialProperty furRimAntiLight        = new lilMaterialProperty("_FurRimAntiLight", PropertyBlock.Fur);
 
         private readonly lilMaterialProperty stencilRef                 = new lilMaterialProperty("_StencilRef", PropertyBlock.Stencil);
         private readonly lilMaterialProperty stencilReadMask            = new lilMaterialProperty("_StencilReadMask", PropertyBlock.Stencil);
@@ -1458,6 +1461,9 @@ namespace lilToon
                 furRootOffset,
                 furCutoutLength,
                 furTouchStrength,
+                furRimColor,
+                furRimFresnelPower,
+                furRimAntiLight,
 
                 stencilRef,
                 stencilReadMask,
@@ -3348,6 +3354,13 @@ namespace lilToon
                         }
                         lilEditorGUI.MinusRangeGUI(furRootOffset, GetLoc("sRootWidth"));
                         LocalizedProperty(furTouchStrength);
+                        lilEditorGUI.DrawLine();
+                        EditorGUILayout.LabelField(GetLoc("sRimLight"), EditorStyles.boldLabel);
+                        EditorGUI.indentLevel++;
+                        LocalizedProperty(furRimColor);
+                        LocalizedProperty(furRimFresnelPower);
+                        LocalizedProperty(furRimAntiLight);
+                        EditorGUI.indentLevel--;
                         EditorGUILayout.EndVertical();
                         EditorGUILayout.EndVertical();
                     }
@@ -5178,6 +5191,15 @@ namespace lilToon
                         EditorGUI.indentLevel -= 2;
                         LocalizedProperty(shadowStrength);
                     }
+                    else if(shadowMaskType.floatValue == 2.0f)
+                    {
+                        LocalizedPropertyTexture(new GUIContent("SDF", "Right (R), Left (G)"), shadowStrengthMask);
+                        EditorGUI.indentLevel += 2;
+                            LocalizedProperty(shadowStrengthMaskLOD);
+                            LocalizedProperty(shadowFlatBlur, "Blend Y Direction");
+                        EditorGUI.indentLevel -= 2;
+                        LocalizedProperty(shadowStrength);
+                    }
                     else
                     {
                         LocalizedPropertyTexture(maskStrengthContent, shadowStrengthMask, shadowStrength);
@@ -5315,6 +5337,15 @@ namespace lilToon
                         EditorGUI.indentLevel += 2;
                             LocalizedProperty(shadowFlatBorder);
                             LocalizedProperty(shadowFlatBlur);
+                        EditorGUI.indentLevel -= 2;
+                        LocalizedProperty(shadowStrength);
+                    }
+                    else if(shadowMaskType.floatValue == 2.0f)
+                    {
+                        LocalizedPropertyTexture(new GUIContent("SDF", "Right (R), Left (G)"), shadowStrengthMask);
+                        EditorGUI.indentLevel += 2;
+                            LocalizedProperty(shadowStrengthMaskLOD);
+                            LocalizedProperty(shadowFlatBlur, "Blend Y Direction");
                         EditorGUI.indentLevel -= 2;
                         LocalizedProperty(shadowStrength);
                     }

@@ -607,7 +607,7 @@ Shader "_lil/[Optional] lilToonFurOnlyTwoPass"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 43
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 44
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -657,6 +657,9 @@ Shader "_lil/[Optional] lilToonFurOnlyTwoPass"
                         _FurRootOffset              ("sRootWidth", Range(-1,0)) = 0
                         _FurCutoutLength            ("sLength+ (Cutout)", Float) = 0.8
                         _FurTouchStrength           ("sTouchStrength", Range(0, 1)) = 0
+                        _FurRimColor                ("sColor", Color) = (0.0,0.0,0.0,1.0)
+        [PowerSlider(3.0)]_FurRimFresnelPower       ("sFresnelPower", Range(0.01, 50)) = 3.0
+                        _FurRimAntiLight            ("sAntiLight", Range(0, 1)) = 0.5
 
         //----------------------------------------------------------------------------------------------------------------------
         // Fur Advanced

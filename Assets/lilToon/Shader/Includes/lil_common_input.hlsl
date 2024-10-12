@@ -381,6 +381,7 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_FUR)
         float4  _FurNoiseMask_ST;
         float4  _FurVector;
+        float4  _FurRimColor;
     #endif
     #if defined(LIL_REFRACTION) || defined(LIL_GEM)
         float4  _RefractionColor;
@@ -633,6 +634,8 @@ CBUFFER_START(UnityPerMaterial)
         float   _FurRootOffset;
         float   _FurRandomize;
         float   _FurTouchStrength;
+        float   _FurRimFresnelPower;
+        float   _FurRimAntiLight;
     #endif
     #if defined(LIL_REFRACTION) || defined(LIL_GEM)
         float   _RefractionStrength;
