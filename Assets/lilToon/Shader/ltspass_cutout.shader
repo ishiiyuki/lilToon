@@ -608,7 +608,7 @@ Shader "Hidden/ltspass_cutout"
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
-        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 44
+        [HideInInspector]                               _lilToonVersion     ("Version", Int) = 45
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -998,6 +998,17 @@ Shader "Hidden/ltspass_cutout"
         {
             Name "SHADOW_CASTER"
             Tags {"LightMode" = "ShadowCaster"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
             Offset 1, 1
             Cull [_Cull]
 
@@ -1027,6 +1038,17 @@ Shader "Hidden/ltspass_cutout"
         {
             Name "SHADOW_CASTER_OUTLINE"
             Tags {"LightMode" = "ShadowCaster"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
             Offset 1, 1
             Cull [_Cull]
 

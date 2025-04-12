@@ -17,6 +17,7 @@ namespace lilToon
     {
         internal static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess, bool ismulti)
         {
+            Undo.RecordObject(material, null);
             int renderQueue = GetTrueRenderQueue(material);
             RenderingMode rend = renderingMode;
             lilRenderPipeline RP = lilRenderPipelineReader.GetRP();
@@ -632,17 +633,26 @@ namespace lilToon
                 {
                     material.SetTexture("_MatCapTex", null);
                     material.SetTexture("_MatCapBlendMask", null);
+                    material.SetTexture("_MatCapBumpMap", null);
                 }
                 if(IsPropZero(material, "_UseMatCap2nd", animatedProps))
                 {
                     material.SetTexture("_MatCap2ndTex", null);
                     material.SetTexture("_MatCap2ndBlendMask", null);
+                    material.SetTexture("_MatCap2ndBumpMap", null);
                 }
                 if(!material.shader.name.Contains("Outline"))
                 {
                     material.SetTexture("_OutlineTex", null);
                     material.SetTexture("_OutlineWidthMask", null);
                     material.SetTexture("_OutlineVectorTex", null);
+                }
+                if(!material.shader.name.Contains("Fur"))
+                {
+                    material.SetTexture("_FurVectorTex", null);
+                    material.SetTexture("_FurLengthMask", null);
+                    material.SetTexture("_FurNoiseMask", null);
+                    material.SetTexture("_FurMask", null);
                 }
                 if(IsPropZero(material, "_UseRim", animatedProps)) material.SetTexture("_RimColorTex", null);
                 if(IsPropZero(material, "_UseGlitter", animatedProps)) material.SetTexture("_GlitterColorTex", null);
@@ -654,7 +664,7 @@ namespace lilToon
 
         private static bool IsPropZero(Material material, string name, string[] animatedProps)
         {
-            return material.GetFloat(name) == 0.0f && !animatedProps.Contains(name);
+            return !material.HasProperty(name) || material.GetFloat(name) == 0.0f && !animatedProps.Contains(name);
         }
 
         public static void RemoveShaderKeywords(Material material)
