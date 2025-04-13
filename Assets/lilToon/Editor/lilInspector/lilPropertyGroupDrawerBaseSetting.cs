@@ -138,13 +138,15 @@ namespace lilToon
                     LocalizedProperty(invisible);
                     LocalizedProperty(zwrite);
 
-                //プロパティ　トグルにnoMirrorをついあk
-                LocalizedProperty(noMirror);
-                LocalizedProperty(noCamera);
-                LocalizedProperty(onlyMirror);
-                LocalizedProperty(onlyCamera);
-                LocalizedProperty(useMirrorTex);
-                if (zwrite.floatValue != 1.0f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
+
+                    //プロパティ　トグルにnoMirrorを追加
+                    LocalizedProperty(noMirror);
+                    LocalizedProperty(noCamera);
+                    LocalizedProperty(onlyMirror);
+                    LocalizedProperty(onlyCamera);
+                    LocalizedProperty(useMirrorTex);
+
+                    if(zwrite.floatValue != 1.0f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
                     {
                         zwrite.floatValue = 1.0f;
                     }

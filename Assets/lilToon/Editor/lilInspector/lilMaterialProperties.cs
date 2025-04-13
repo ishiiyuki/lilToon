@@ -20,12 +20,14 @@ namespace lilToon
         // Material properties
         private readonly lilMaterialProperty invisible              = new lilMaterialProperty("_Invisible", PropertyBlock.Base);
 
+
         private readonly lilMaterialProperty noMirror = new lilMaterialProperty("_NoMirror", PropertyBlock.Base);
         private readonly lilMaterialProperty noCamera = new lilMaterialProperty("_NoCamera", PropertyBlock.Base);
         private readonly lilMaterialProperty onlyMirror = new lilMaterialProperty("_OnlyMirror", PropertyBlock.Base);
         private readonly lilMaterialProperty onlyCamera = new lilMaterialProperty("_OnlyCamera", PropertyBlock.Base);
         private readonly lilMaterialProperty useMirrorTex = new lilMaterialProperty("_UseMirrorTex", PropertyBlock.Base);
         private readonly lilMaterialProperty mainMirrorTex = new lilMaterialProperty("_MainMirrorTex", true, PropertyBlock.Base);
+
 
 
         private readonly lilMaterialProperty cutoff                 = new lilMaterialProperty("_Cutoff", PropertyBlock.Base);
@@ -669,11 +671,13 @@ namespace lilToon
             return allProperty ??= new[]
             {
                 invisible,
+
                 noMirror,
                 noCamera,
                 onlyMirror,
                 onlyCamera,
                 useMirrorTex,
+
                 cutoff,
                 preColor,
                 preOutType,

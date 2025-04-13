@@ -542,13 +542,16 @@ namespace lilToon
                             LocalizedProperty(cull);
                             LocalizedProperty(invisible);
                             LocalizedProperty(zwrite);
-                        //プロパティ　トグルにnoMirrorをついあk
-                        LocalizedProperty(noMirror);
-                        LocalizedProperty(noCamera);
-                        LocalizedProperty(onlyMirror);
-                        LocalizedProperty(onlyCamera);
-                        LocalizedProperty(useMirrorTex);
-                        RenderQueueField();
+
+                            //プロパティ　トグルにnoMirrorをついあk
+                            LocalizedProperty(noMirror);
+                            LocalizedProperty(noCamera);
+                            LocalizedProperty(onlyMirror);
+                            LocalizedProperty(onlyCamera);
+                            LocalizedProperty(useMirrorTex);
+
+                            RenderQueueField();
+
                             lilEditorGUI.DrawLine();
                             GUILayout.Label("FakeShadow", boldLabel);
                             LocalizedProperty(fakeShadowVector);

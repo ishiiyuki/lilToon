@@ -241,12 +241,14 @@ namespace lilToon
             else                                AssetDatabase.CreateAsset(liteMaterial, FileUtil.GetProjectRelativePath(matPath));
 
             liteMaterial.SetFloat("_Invisible",                 invisible.floatValue);
+
             //izuna
             liteMaterial.SetFloat("_NoMirror", noMirror.floatValue);
             liteMaterial.SetFloat("_NoCamera", noCamera.floatValue);
             liteMaterial.SetFloat("_OnlyMirror", onlyMirror.floatValue);
             liteMaterial.SetFloat("_OnlyCamera", onlyCamera.floatValue);
             liteMaterial.SetFloat("_UseMirrorTex", useMirrorTex.floatValue);
+
 
             liteMaterial.SetFloat("_Cutoff",                    cutoff.floatValue);
             liteMaterial.SetFloat("_SubpassCutoff",             subpassCutoff.floatValue);
