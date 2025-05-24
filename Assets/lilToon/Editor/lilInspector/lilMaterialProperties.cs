@@ -668,7 +668,7 @@ namespace lilToon
         private lilMaterialProperty[] allProperty;
         private lilMaterialProperty[] AllProperties()
         {
-            return allProperty ??= new[]
+            return allProperty != null ? allProperty : allProperty = new[]
             {
                 invisible,
 
@@ -1355,7 +1355,7 @@ namespace lilToon
                     var lilPorp = allProps[i];
                     foreach(var block in lilPorp.blocks)
                     {
-                        if(block2Propertes.ContainsKey(block) is false) { block2Propertes[block] = new(); }
+                        if(!block2Propertes.ContainsKey(block)) { block2Propertes[block] = new List<lilMaterialProperty>(); }
                         block2Propertes[block].Add(lilPorp);
                     }
                 }
