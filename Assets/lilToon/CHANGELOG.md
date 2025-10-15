@@ -4,6 +4,114 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2025-10-09
+### Fixed
+- Get light direction from Adaptive Probe Volumes 
+
+## [2.3.0] - 2025-10-06
+### Added
+- Adaptive Probe Volumes
+
+### Fixed
+- AudioLinkMask does not work in the vertex shader
+- Custom shader inspector errors
+- Backlight alpha has no effect
+- Outline does not work on lite shaders on URP
+- Animated decal not properly baked
+- Inspector does not display on macOS with exFAT
+- Warnings in Unity 6
+
+## [2.2.1] - 2025-08-29
+### Fixed
+- Shader error
+
+## [2.2.0] - 2025-08-29
+### Added
+- Added `_UdonForceSceneLighting` to turn off avatar brightness adjustment from the world side
+
+### Fixed
+- Compile error in HDRP
+- Inspector error on first import
+- Outline highlighting not working
+
+## [2.1.10] - 2025-08-17
+### Changed
+- Changed the default value of Border for VRCLV Rim Light to 3
+
+### Fixed
+- Light color adjustments are not reflected in VRCLV rim light
+
+## [2.1.9] - 2025-08-15
+### Fixed
+- VRCLV Rim Light Border 1 or more is not working properly
+- Fallback settings cannot be opened for some shaders
+
+## [2.1.8] - 2025-08-11
+### Fixed
+- Light direction may be incorrect
+- Editor errors may occur when using some file systems on macOS
+
+## [2.1.7] - 2025-08-05
+### Fixed
+- Rim light for VRCLV does not work
+
+## [2.1.6] - 2025-08-05
+### Changed
+- VRCLV optimization
+- Compatible with VRCLV 1.0.0
+- Increased the upper limit of the VRCLV rim light range to 3
+
+## [2.1.5] - 2025-08-04
+### Changed
+- Fur shader VRCLV calculation now performed in pixel shader
+- Shader optimization
+
+### Fixed
+- Shader error occurs when using AudioLink and LTCGI together in a world project
+
+## [2.1.4] - 2025-07-27
+### Fixed
+- Shader error occurs under certain conditions
+
+## [2.1.3] - 2025-07-27
+### Fixed
+- Shader error occurs under certain conditions
+
+## [2.1.2] - 2025-07-25
+### Fixed
+- Shaders cannot be loaded when using LTCGI with older GPUs
+
+## [2.1.1] - 2025-07-25
+### Fixed
+- Shader error occurs under certain conditions
+- VRCLV rim light settings may not be displayed
+
+## [2.1.0] - 2025-07-25
+### Added
+- Properties to adjust the rim light of VRCLV
+- API to consolidate shader compilations into one when building multiple avatars
+
+### Changed
+- Changed VRC Light Volumes to be calculated per pixel (excluding fur shader due to load considerations)
+
+### Fixed
+- Shadows are not cast if the Skybox is invalid
+- MatCap is not displayed correctly when using StaticBatching
+- When noise is unassigned in Dissolve, the appearance changes before and after optimization
+
+## [2.0.0] - 2025-07-23
+### Added
+- Setting ToonStandard Ramp in VRChat Shader Fallback
+
+### Changed
+- Updated included VRC Light Volumes to 2.0.0
+- VRC Light Volumes now respect direction
+- Turn off Auto Referenced in asmdef to speed up script compilation
+
+### Removed
+- Removed Shrink mode for fur and unified it to Subdivision mode
+- Removed mesh encryption feature
+
 ## [1.10.3] - 2025-05-20
 ### Fixed
 - VRC Light Volumes not working on lilToonMulti

@@ -1,7 +1,6 @@
 #ifndef LIL_INPUT_INCLUDED
 #define LIL_INPUT_INCLUDED
 
-
 uniform float _VRChatMirrorMode;
 uniform float _VRChatCameraMode;
 //------------------------------------------------------------------------------------------------------------------------------
@@ -103,8 +102,9 @@ SAMPLER(lil_sampler_linear_clamp);
 
 #ifndef LIL_INPUT_BASE_INCLUDED
 
-
+#if !defined(LIL_BRP)
 CBUFFER_START(UnityPerMaterial)
+#endif
 #if defined(LIL_LITE)
     float4  _LightDirectionOverride;
     float4  _Color;
@@ -164,7 +164,6 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _NoCamera;
     lilBool _OnlyMirror;
     lilBool _OnlyCamera;
-    lilBool _UseMirrorTex;
     lilBool _UseShadow;
     lilBool _UseMatCap;
     lilBool _MatCapMul;
@@ -177,18 +176,11 @@ CBUFFER_START(UnityPerMaterial)
     float4  _Color;
     float4  _MainTex_ST;
     float4  _FakeShadowVector;
-    #if defined(LIL_FEATURE_ENCRYPTION)
-        float4  _Keys;
-    #endif
     lilBool _Invisible;
-    lilBool _NoMirror;
+lilBool _NoMirror;
     lilBool _NoCamera;
     lilBool _OnlyMirror;
     lilBool _OnlyCamera;
-    lilBool _UseMirrorTex;
-    #if defined(LIL_FEATURE_ENCRYPTION)
-        lilBool _IgnoreEncryption;
-    #endif
 #elif defined(LIL_BAKER)
     float4  _Color;
     float4  _MainTex_ST;
@@ -211,6 +203,8 @@ CBUFFER_START(UnityPerMaterial)
     uint    _Main3rdTex_UVMode;
     uint    _AlphaMaskMode;
     lilBool _UseMain2ndTex;
+    float4 _Main2ndTexDecalAnimation;
+    float4 _Main2ndTexDecalSubParam;
     lilBool _Main2ndTexIsDecal;
     lilBool _Main2ndTexIsLeftOnly;
     lilBool _Main2ndTexIsRightOnly;
@@ -219,6 +213,8 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _Main2ndTexShouldFlipCopy;
     lilBool _Main2ndTexIsMSDF;
     lilBool _UseMain3rdTex;
+    float4 _Main3rdTexDecalAnimation;
+    float4 _Main3rdTexDecalSubParam;
     lilBool _Main3rdTexIsDecal;
     lilBool _Main3rdTexIsLeftOnly;
     lilBool _Main3rdTexIsRightOnly;
@@ -226,7 +222,6 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _Main3rdTexShouldFlipMirror;
     lilBool _Main3rdTexShouldFlipCopy;
     lilBool _Main3rdTexIsMSDF;
-    lilBool _UseMirrorTex;
 #elif defined(LIL_MULTI)
     float4  _LightDirectionOverride;
     float4  _BackfaceColor;
@@ -375,9 +370,6 @@ CBUFFER_START(UnityPerMaterial)
         float4  _DissolveNoiseMask_ST;
         float4  _DissolveNoiseMask_ScrollRotate;
     #endif
-    #if defined(LIL_FEATURE_ENCRYPTION)
-        float4  _Keys;
-    #endif
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
         float4  _OutlineColor;
         float4  _OutlineLitColor;
@@ -407,6 +399,8 @@ CBUFFER_START(UnityPerMaterial)
     float   _LightMaxLimit;
     float   _MonochromeLighting;
     float   _AAStrength;
+    float   _EnvRimBorder;
+    float   _EnvRimBlur;
     #if defined(LIL_BRP)
         float   _AlphaBoostFA;
     #endif
@@ -739,14 +733,12 @@ CBUFFER_START(UnityPerMaterial)
     #endif
     #if defined(LIL_FUR)
         uint    _FurLayerNum;
-        uint    _FurMeshType;
     #endif
     lilBool _Invisible;
-    lilBool _NoMirror;
+lilBool _NoMirror;
     lilBool _NoCamera;
     lilBool _OnlyMirror;
     lilBool _OnlyCamera;
-    lilBool _UseMirrorTex;
     lilBool _UseClippingCanceller;
     #if defined(LIL_MULTI_INPUTS_MAIN2ND)
         lilBool _Main2ndTexIsMSDF;
@@ -823,9 +815,6 @@ CBUFFER_START(UnityPerMaterial)
         lilBool _AudioLink2Emission2nd;
         lilBool _AudioLink2Vertex;
     #endif
-    #if defined(LIL_FEATURE_ENCRYPTION)
-        lilBool _IgnoreEncryption;
-    #endif
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
         lilBool _OutlineLitApplyTex;
         lilBool _OutlineLitShadowReceive;
@@ -845,7 +834,10 @@ CBUFFER_START(UnityPerMaterial)
 #if defined(LIL_CUSTOM_PROPERTIES)
     LIL_CUSTOM_PROPERTIES
 #endif
+
+#if !defined(LIL_BRP)
 CBUFFER_END
+#endif
 
 #endif // LIL_INPUT_BASE_INCLUDED
 
@@ -910,7 +902,6 @@ TEXTURE2D(_FurMask);
 TEXTURE2D(_FurLengthMask);
 TEXTURE2D(_FurVectorTex);
 TEXTURE2D(_TriMask);
-TEXTURE2D(_MainMirrorTex);
 SAMPLER(sampler_MainTex);
 SAMPLER(sampler_Main2ndTex);
 SAMPLER(sampler_Main3rdTex);
@@ -918,8 +909,11 @@ SAMPLER(sampler_EmissionMap);
 SAMPLER(sampler_Emission2ndMap);
 SAMPLER(sampler_AudioLinkMask);
 SAMPLER(sampler_OutlineTex);
+
 // AudioLink
-#if defined(LIL_FEATURE_AUDIOLINK) && !defined(AUDIOLINK_CGINC_INCLUDED)
+#if defined(LIL_FEATURE_AUDIOLINK_PACKAGE)
+#include "Packages/com.llealloo.audiolink/Runtime/Shaders/AudioLink.cginc"
+#elif defined(LIL_FEATURE_AUDIOLINK) && !defined(AUDIOLINK_CGINC_INCLUDED)
 TEXTURE2D_FLOAT(_AudioTexture);
 float4 _AudioTexture_TexelSize;
 #endif
@@ -930,6 +924,9 @@ float4 _AudioTexture_TexelSize;
 #if !defined(LIL_FEATURE_OutlineTex)
     #define sampler_OutlineTex lil_sampler_linear_repeat
 #endif
+
+// For VRChat
+uint _UdonForceSceneLighting;
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Custom properties

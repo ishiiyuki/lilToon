@@ -379,10 +379,11 @@
     #define LIL_APPLY_OUTLINE_LIT_SHADOW
 #endif
 
-#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_V2F_NDOTL)
+#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED)
     #define LIL_APPLY_OUTLINE_COLOR \
+        float outlineNdotL = dot(normalize(lilTransformDirWStoVSCenter(fd.N).xy), normalize(lilTransformDirWStoVSCenter(fd.L).xy)) * 0.5 + 0.5; \
         float3 outlineLitColor = _OutlineLitApplyTex ? fd.col.rgb * _OutlineLitColor.rgb : _OutlineLitColor.rgb; \
-        float outlineLitFactor = saturate(input.NdotL * _OutlineLitScale + _OutlineLitOffset) * _OutlineLitColor.a; \
+        float outlineLitFactor = saturate(outlineNdotL * _OutlineLitScale + _OutlineLitOffset) * _OutlineLitColor.a; \
         LIL_APPLY_OUTLINE_LIT_SHADOW \
         fd.col.rgb = lerp(fd.col.rgb * _OutlineColor.rgb, outlineLitColor, outlineLitFactor); \
         fd.col.a *= _OutlineColor.a;
@@ -1198,10 +1199,9 @@
             // Apply Light
             float3 directCol = fd.albedo * fd.lightColor;
             indirectCol = indirectCol * fd.lightColor;
-
             #if !defined(LIL_PASS_FORWARDADD)
                 // Environment Light
-                indirectCol = lerp(indirectCol, fd.albedo, fd.indLightColor);
+                indirectCol = lerp(indirectCol, fd.albedo, saturate(fd.indLightColor * _ShadowEnvStrength));
             #endif
             // Fix
             indirectCol = min(indirectCol, directCol);
@@ -1252,7 +1252,7 @@
             indirectCol = indirectCol * fd.lightColor;
 
             // Environment Light
-            indirectCol = lerp(indirectCol, fd.albedo, fd.indLightColor);
+            indirectCol = lerp(indirectCol, fd.albedo, saturate(fd.indLightColor * _ShadowEnvStrength));
             // Fix
             indirectCol = min(indirectCol, directCol);
             // Gradation
@@ -1320,9 +1320,9 @@
             #endif
 
             // Color
-            float3 backlightColor = _BacklightColor.rgb;
+            float4 backlightColor = _BacklightColor;
             #if defined(LIL_FEATURE_BacklightColorTex)
-                backlightColor *= LIL_SAMPLE_2D_ST(_BacklightColorTex, samp, fd.uvMain).rgb;
+                backlightColor *= LIL_SAMPLE_2D_ST(_BacklightColorTex, samp, fd.uvMain);
             #endif
 
             // Factor
@@ -1336,8 +1336,8 @@
             backlight = fd.facing < (_BacklightBackfaceMask-1.0) ? 0.0 : backlight;
 
             // Blend
-            backlightColor = lerp(backlightColor, backlightColor * fd.albedo, _BacklightMainStrength);
-            fd.col.rgb += backlight * backlightColor * fd.lightColor;
+            backlightColor.rgb = lerp(backlightColor.rgb, backlightColor.rgb * fd.albedo, _BacklightMainStrength);
+            fd.col.rgb += backlight * backlightColor.a * backlightColor.rgb * fd.lightColor;
         }
     }
 #endif

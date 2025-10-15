@@ -61,7 +61,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_IDMASK = true;
     public bool LIL_FEATURE_UDIMDISCARD = true;
     public bool LIL_FEATURE_DITHER = true;
-    public bool LIL_FEATURE_ENCRYPTION = false;
     public bool LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
     public bool LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
     public bool LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
@@ -288,7 +287,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_DITHER = false;
         shaderSetting.LIL_FEATURE_IDMASK = false;
         shaderSetting.LIL_FEATURE_UDIMDISCARD = false;
-        shaderSetting.LIL_FEATURE_ENCRYPTION = lilDirectoryManager.ExistsEncryption();
         shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = false;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = false;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = false;
@@ -399,7 +397,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_DITHER = true;
         shaderSetting.LIL_FEATURE_IDMASK = true;
         shaderSetting.LIL_FEATURE_UDIMDISCARD = true;
-        shaderSetting.LIL_FEATURE_ENCRYPTION = lilDirectoryManager.ExistsEncryption();
         shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
@@ -542,9 +539,13 @@ public class lilToonSetting : ScriptableObject
         #elif LILTOON_VRCSDK3
         if (shaderSetting.LIL_OPTIMIZE_USE_VRCLIGHTVOLUMES) sb.AppendLine("#define LIL_FEATURE_VRCLIGHTVOLUMES_WITHOUTPACKAGE");
         #endif
+        #if LILTOON_AUDIOLINK
+        sb.AppendLine("#define LIL_FEATURE_AUDIOLINK_PACKAGE");
+        #endif
         return sb.ToString();
     }
 
+    internal static bool isOptimize = false;
     public static string BuildShaderSettingString(lilToonSetting shaderSetting, bool isFile)
     {
         var sb = new StringBuilder();
@@ -615,7 +616,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_DITHER) sb.AppendLine("#define LIL_FEATURE_DITHER");
         if (shaderSetting.LIL_FEATURE_IDMASK) sb.AppendLine("#define LIL_FEATURE_IDMASK");
         if (shaderSetting.LIL_FEATURE_UDIMDISCARD) sb.AppendLine("#define LIL_FEATURE_UDIMDISCARD");
-        if (shaderSetting.LIL_FEATURE_ENCRYPTION) sb.AppendLine("#define LIL_FEATURE_ENCRYPTION");
         if (shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION) sb.AppendLine("#define LIL_FEATURE_OUTLINE_TONE_CORRECTION");
         if (shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW) sb.AppendLine("#define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW");
         if (shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV) sb.AppendLine("#define LIL_FEATURE_ANIMATE_OUTLINE_UV");
@@ -626,11 +626,13 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_Main2ndTex) sb.AppendLine("#define LIL_FEATURE_Main2ndTex");
         if (shaderSetting.LIL_FEATURE_Main2ndBlendMask) sb.AppendLine("#define LIL_FEATURE_Main2ndBlendMask");
         if (shaderSetting.LIL_FEATURE_Main2ndDissolveMask) sb.AppendLine("#define LIL_FEATURE_Main2ndDissolveMask");
-        if (shaderSetting.LIL_FEATURE_Main2ndDissolveNoiseMask) sb.AppendLine("#define LIL_FEATURE_Main2ndDissolveNoiseMask");
+        /*if (shaderSetting.LIL_FEATURE_Main2ndDissolveNoiseMask)*/
+        sb.AppendLine("#define LIL_FEATURE_Main2ndDissolveNoiseMask");
         if (shaderSetting.LIL_FEATURE_Main3rdTex) sb.AppendLine("#define LIL_FEATURE_Main3rdTex");
         if (shaderSetting.LIL_FEATURE_Main3rdBlendMask) sb.AppendLine("#define LIL_FEATURE_Main3rdBlendMask");
         if (shaderSetting.LIL_FEATURE_Main3rdDissolveMask) sb.AppendLine("#define LIL_FEATURE_Main3rdDissolveMask");
-        if (shaderSetting.LIL_FEATURE_Main3rdDissolveNoiseMask) sb.AppendLine("#define LIL_FEATURE_Main3rdDissolveNoiseMask");
+        /*if (shaderSetting.LIL_FEATURE_Main3rdDissolveNoiseMask)*/
+        sb.AppendLine("#define LIL_FEATURE_Main3rdDissolveNoiseMask");
         if (shaderSetting.LIL_FEATURE_AlphaMask) sb.AppendLine("#define LIL_FEATURE_AlphaMask");
         if (shaderSetting.LIL_FEATURE_BumpMap) sb.AppendLine("#define LIL_FEATURE_BumpMap");
         if (shaderSetting.LIL_FEATURE_Bump2ndMap) sb.AppendLine("#define LIL_FEATURE_Bump2ndMap");
@@ -669,7 +671,8 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_AudioLinkMask) sb.AppendLine("#define LIL_FEATURE_AudioLinkMask");
         if (shaderSetting.LIL_FEATURE_AudioLinkLocalMap) sb.AppendLine("#define LIL_FEATURE_AudioLinkLocalMap");
         if (shaderSetting.LIL_FEATURE_DissolveMask) sb.AppendLine("#define LIL_FEATURE_DissolveMask");
-        if (shaderSetting.LIL_FEATURE_DissolveNoiseMask) sb.AppendLine("#define LIL_FEATURE_DissolveNoiseMask");
+        /*if (shaderSetting.LIL_FEATURE_DissolveNoiseMask)*/
+        sb.AppendLine("#define LIL_FEATURE_DissolveNoiseMask");
         if (shaderSetting.LIL_FEATURE_OutlineTex) sb.AppendLine("#define LIL_FEATURE_OutlineTex");
         if (shaderSetting.LIL_FEATURE_OutlineWidthMask) sb.AppendLine("#define LIL_FEATURE_OutlineWidthMask");
         if (shaderSetting.LIL_FEATURE_OutlineVectorTex) sb.AppendLine("#define LIL_FEATURE_OutlineVectorTex");
@@ -692,6 +695,7 @@ public class lilToonSetting : ScriptableObject
             if (!shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT) sb.AppendLine("#pragma lil_skip_variants_addlight");
             if (!shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP) sb.AppendLine("#pragma lil_skip_variants_lightmaps");
         }
+        if (isOptimize) sb.AppendLine("#define LIL_INPUT_OPTIMIZED");
         return sb.ToString();
     }
 
@@ -815,7 +819,7 @@ public class lilToonSetting : ScriptableObject
         ApplyShaderSetting(shaderSetting, "[lilToon] PreprocessBuild", shaders);
         AssetDatabase.Refresh();
     }
-    
+
     internal static void GetOptimizedSetting(Material[] materials, AnimationClip[] clips, out string usedShaders, out string optimizedHLSL, out string shaderSettingText)
     {
         usedShaders = null;
@@ -823,7 +827,7 @@ public class lilToonSetting : ScriptableObject
         shaderSettingText = null;
 
         var shaders = GetShaderListFromGameObject(materials, clips);
-        if(shaders.Count() == 0) return;
+        if (shaders.Count() == 0) return;
 
         usedShaders = string.Join(Environment.NewLine, shaders.Select(s => s.name).Distinct().ToArray());
 
@@ -834,13 +838,13 @@ public class lilToonSetting : ScriptableObject
         optimizedHLSL = lilOptimizer.GetOptimizedText(materials, clips);
 
         // Get materials
-        foreach(var material in materials)
+        foreach (var material in materials)
         {
             SetupShaderSettingFromMaterial(material, ref shaderSetting);
         }
 
         // Get animations
-        foreach(var clip in clips)
+        foreach (var clip in clips)
         {
             SetupShaderSettingFromAnimationClip(clip, ref shaderSetting, true);
         }
@@ -990,7 +994,9 @@ public class lilToonSetting : ScriptableObject
     internal static void SetupShaderSettingFromMaterial(Material material, ref lilToonSetting shaderSetting)
     {
         if(material == null || material.shader == null) return;
-        if(material.shader.name.Contains("Lite") || material.shader.name.Contains("Multi")) return;
+
+        var shaderName = material.shader.name;
+        if(lilShaderUtils.IsLiteShaderName(shaderName) || lilShaderUtils.IsMultiShaderName(shaderName)) return;
         if(!lilMaterialUtils.CheckShaderIslilToon(material.shader)) return;
 
         if(!shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV && material.HasProperty("_MainTex_ScrollRotate") && material.GetVector("_MainTex_ScrollRotate") != lilConstants.defaultScrollRotate)
@@ -1033,7 +1039,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_SHADOW_LUT = true;
         }
 
-        if(material.shader.name.Contains("Fur"))
+        if(lilShaderUtils.IsFurShaderName(shaderName))
         {
             if(!shaderSetting.LIL_FEATURE_FUR_COLLISION && material.HasProperty("_FurTouchStrength") && material.GetFloat("_FurTouchStrength") != 0.0f)
             {
@@ -1243,7 +1249,7 @@ public class lilToonSetting : ScriptableObject
         }
            
         // Outline
-        if(material.shader.name.Contains("Outline"))
+        if(lilShaderUtils.IsOutlineShaderName(shaderName))
         {
             if(!shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV && material.HasProperty("_OutlineTex_ScrollRotate") && material.GetVector("_OutlineTex_ScrollRotate") != lilConstants.defaultScrollRotate)
             {
@@ -1345,8 +1351,6 @@ public class lilToonSetting : ScriptableObject
             }
 
             shaderSetting.LIL_FEATURE_UDIMDISCARD = shaderSetting.LIL_FEATURE_UDIMDISCARD || propname.Contains("_UDIMDiscardCompile");
-            
-            shaderSetting.LIL_FEATURE_ENCRYPTION = shaderSetting.LIL_FEATURE_ENCRYPTION || propname.Contains("_BitKey0");
 
             shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV || propname.Contains("_OutlineTex_ScrollRotate");
             shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION || propname.Contains("_OutlineTexHSVG");

@@ -200,11 +200,6 @@
     #define LIL_SHOULD_POSITION_OS
 #endif
 
-// positionWS
-#if defined(SHADOWS_SCREEN) || defined(LIL_PASS_FORWARDADD) || defined(LIL_FEATURE_MAIN2ND) || defined(LIL_FEATURE_MAIN3RD) || defined(LIL_FEATURE_ANISOTROPY) || defined(LIL_FEATURE_RECEIVE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_EMISSION_1ST) || defined(LIL_FEATURE_EMISSION_2ND) || defined(LIL_FEATURE_PARALLAX) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_FEATURE_LTCGI) || defined(LIL_REFRACTION) || !defined(LIL_BRP) || defined(LIL_USE_LPPV)
-    #define LIL_SHOULD_POSITION_WS
-#endif
-
 // uv1
 #if defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_GLITTER)
     #define LIL_SHOULD_UV1
@@ -2022,7 +2017,7 @@ float3 lilGetLightMapDirection(float2 uv)
     #define LIL_LIGHTDIRECTION_COORDS(idx)  float3 lightDirection : TEXCOORD##idx;
 #endif
 
-#if !defined(LIL_PASS_FORWARDADD) && (defined(LIL_FEATURE_SHADOW) || defined(LIL_LITE))
+#if (defined(LIL_BRP) || defined(LIL_HDRP)) && !defined(LIL_PASS_FORWARDADD)
     #define LIL_INDLIGHTCOLOR_COORDS(idx)   float3 indLightColor : TEXCOORD##idx;
     #define LIL_GET_INDLIGHTCOLOR(i,o)      o.indLightColor = i.indLightColor
 #else
@@ -2031,7 +2026,9 @@ float3 lilGetLightMapDirection(float2 uv)
 #endif
 
 // Dir light & indir light
-#if defined(LIL_USE_LPPV) && (defined(LIL_FEATURE_SHADOW) || defined(LIL_LITE))
+#if (defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2))
+    #define LIL_CALC_TWOLIGHT(i,o) lilGetLightColorDoubleAPV(i.positionWS, vertexNormalInput.normalWS, o.lightColor, o.indLightColor)
+#elif defined(LIL_USE_LPPV) && (defined(LIL_FEATURE_SHADOW) || defined(LIL_LITE))
     #define LIL_CALC_TWOLIGHT(i,o) lilGetLightColorDouble(i.positionWS, o.lightColor, o.indLightColor)
 #elif defined(LIL_FEATURE_SHADOW) || defined(LIL_LITE)
     #define LIL_CALC_TWOLIGHT(i,o) lilGetLightColorDouble(o.lightColor, o.indLightColor)
@@ -2049,6 +2046,13 @@ struct lilLightData
     float3 indLightColor;
 };
 
+#define LIL_FORCE_SCENE_LIGHT \
+    if(_UdonForceSceneLighting) { \
+        _LightMinLimit = 0; \
+        _LightMaxLimit = 100000; \
+        _MonochromeLighting = 0; \
+        _AsUnlit = 0; \
+    }
 
 // Main Light in VS
 #if defined(LIL_USE_ADDITIONALLIGHT_MAIN)
@@ -2118,6 +2122,13 @@ struct lilLightData
         o.lightColor        = lightDatas.directLight; \
         o.indLightColor     = lightDatas.indirectLight; \
         LIL_APPLY_LTCGI(o) \
+        LIL_APPLY_ADDITIONALLIGHT_TO_MAIN(i,o); \
+        LIL_CORRECT_LIGHTCOLOR_VS(o.lightColor)
+#elif defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2)
+    #define LIL_CALC_MAINLIGHT(i,o) \
+        lilLightData o; \
+        o.lightDirection = lilGetFixedLightDirectionAPV(i.positionWS, 0, _LightDirectionOverride); \
+        LIL_CALC_TWOLIGHT(i,o); \
         LIL_APPLY_ADDITIONALLIGHT_TO_MAIN(i,o); \
         LIL_CORRECT_LIGHTCOLOR_VS(o.lightColor)
 #else
@@ -2319,11 +2330,11 @@ struct lilLightData
 
 // Main Color & Emission
 #if defined(LIL_BAKER)
-    #define LIL_GET_SUBTEX(tex,uv)  lilGetSubTexWithoutAnimation(tex, tex##_ST, tex##_ScrollRotate, tex##Angle, uv, 1, tex##IsDecal, tex##IsLeftOnly, tex##IsRightOnly, tex##ShouldCopy, tex##ShouldFlipMirror, tex##ShouldFlipCopy, tex##IsMSDF, isRightHand LIL_SAMP_IN(sampler##tex))
+    #define LIL_GET_SUBTEX(tex,uv)  lilGetSubTexWithoutAnimation(tex, tex##_ST, tex##_ScrollRotate, tex##Angle, uv, 1, tex##IsDecal, tex##IsLeftOnly, tex##IsRightOnly, tex##ShouldCopy, tex##ShouldFlipMirror, tex##ShouldFlipCopy, tex##IsMSDF, isRightHand, tex##DecalAnimation, tex##DecalSubParam LIL_SAMP_IN(sampler##tex))
     #define LIL_GET_EMITEX(tex,uv)  LIL_SAMPLE_2D(tex, sampler##tex, lilCalcUVWithoutAnimation(uv, tex##_ST, tex##_ScrollRotate))
     #define LIL_GET_EMIMASK(tex,uv) LIL_SAMPLE_2D(tex, sampler_MainTex, lilCalcUVWithoutAnimation(uv, tex##_ST, tex##_ScrollRotate))
 #elif defined(LIL_WITHOUT_ANIMATION)
-    #define LIL_GET_SUBTEX(tex,uv)  lilGetSubTexWithoutAnimation(tex, tex##_ST, tex##_ScrollRotate, tex##Angle, uv, 1, tex##IsDecal, tex##IsLeftOnly, tex##IsRightOnly, tex##ShouldCopy, tex##ShouldFlipMirror, tex##ShouldFlipCopy, tex##IsMSDF, fd.isRightHand LIL_SAMP_IN(sampler##tex))
+    #define LIL_GET_SUBTEX(tex,uv)  lilGetSubTexWithoutAnimation(tex, tex##_ST, tex##_ScrollRotate, tex##Angle, uv, 1, tex##IsDecal, tex##IsLeftOnly, tex##IsRightOnly, tex##ShouldCopy, tex##ShouldFlipMirror, tex##ShouldFlipCopy, tex##IsMSDF, fd.isRightHand, tex##DecalAnimation, tex##DecalSubParam LIL_SAMP_IN(sampler##tex))
     #define LIL_GET_EMITEX(tex,uv)  LIL_SAMPLE_2D(tex, sampler##tex, lilCalcUVWithoutAnimation(uv, tex##_ST, tex##_ScrollRotate))
     #define LIL_GET_EMIMASK(tex,uv) LIL_SAMPLE_2D(tex, sampler_MainTex, lilCalcUVWithoutAnimation(uv, tex##_ST, tex##_ScrollRotate))
 #else

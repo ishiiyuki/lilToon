@@ -18,7 +18,7 @@ namespace lilToon
 
             // Root path
             string pathI = AssetDatabase.GUIDToAssetPath("05d1d116436047941ad97d1b9064ee05");
-            string version = lilConstants.currentVersionName;
+            string version = "2.3.1";
             string commonName = "lilToon_" + version;
             pathO += "/" + commonName;
 

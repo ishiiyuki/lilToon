@@ -40,9 +40,9 @@ namespace lilToon
             VersionCheck();
             var labelStyle = new GUIStyle(GUI.skin.label){fontStyle = FontStyle.Bold};
             string versionLabel = "lilToon " + lilConstants.currentVersionName;
-            if(latestVersion != null && latestVersion.latest_vertion_name != null && latestVersion.latest_vertion_value > lilConstants.currentVersionValue)
+            if(latestVersion != null && latestVersion.semver > lilConstants.Version.semver)
             {
-                versionLabel = "[Update] lilToon " + lilConstants.currentVersionName + " -> " + latestVersion.latest_vertion_name;
+                versionLabel = "[Update] lilToon " + lilConstants.currentVersionName + " -> " + latestVersion.version;
                 labelStyle.normal.textColor = Color.red;
             }
 
@@ -58,22 +58,17 @@ namespace lilToon
 
         private static void VersionCheck()
         {
-            if(string.IsNullOrEmpty(latestVersion.latest_vertion_name))
+            if(string.IsNullOrEmpty(latestVersion.version))
             {
-                if(!string.IsNullOrEmpty(lilEditorParameters.instance.versionInfo))
+                if (!string.IsNullOrEmpty(lilEditorParameters.instance.versionInfo) && lilEditorParameters.instance.versionInfo.Contains("version"))
                 {
-                    if(
-                        !string.IsNullOrEmpty(lilEditorParameters.instance.versionInfo) &&
-                        lilEditorParameters.instance.versionInfo.Contains("latest_vertion_name") &&
-                        lilEditorParameters.instance.versionInfo.Contains("latest_vertion_value")
-                    )
-                    {
-                        EditorJsonUtility.FromJsonOverwrite(lilEditorParameters.instance.versionInfo, latestVersion);
-                        return;
-                    }
+                    EditorJsonUtility.FromJsonOverwrite(lilEditorParameters.instance.versionInfo, latestVersion);
                 }
-                latestVersion.latest_vertion_name = lilConstants.currentVersionName;
-                latestVersion.latest_vertion_value = lilConstants.currentVersionValue;
+                else
+                {
+                    latestVersion.version = lilConstants.currentVersionName;
+                }
+                latestVersion.semver = new SemVerParser(latestVersion.version);
                 return;
             }
         }
@@ -91,7 +86,7 @@ namespace lilToon
 
         private static void DrawShaderTypeWarn(Material material)
         {
-            if(!isMultiVariants && material.shader.name.Contains("Overlay") && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpSelectOverlay")))
+            if(!isMultiVariants && lilShaderUtils.IsOverlayShaderName(material.shader.name) && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpSelectOverlay")))
             {
                 material.shader = lts;
             }
@@ -140,6 +135,28 @@ namespace lilToon
                         string[] sFallbackShaderTypes = {"Unlit", "Standard", "VertexLit", "Toon", "Particle", "Sprite", "Matcap", "MobileToon", "Hidden", "toonstandard", "toonstandardoutline"};
                         string[] sFallbackRenderTypes = {"Opaque", "Cutout", "Transparent", "Fade"};
                         string[] sFallbackCullTypes = {"Default", "DoubleSided"};
+                        string[] sFallbackShadingTypes =
+                        {
+                            "Flat",
+                            "Realistic",
+                            "Realistic Soft",
+                            "Realistic Very Soft",
+                            "Toon 2 Band",
+                            "Toon 3 Band",
+                            "Toon 4 Band",
+                            "Custom",
+                        };
+                        string[] sFallbackRampGuids =
+                        {
+                            "8ed41581528c4fa4fa11970aca4edb8d",
+                            "348500adef1d2da428abc7b720b8b699",
+                            "636cf1b5dfca6f54b94ca3d2ff8216c9",
+                            "5f304bf7a07313d43b8562d9eabce646",
+                            "dfafc89321615114fb6dbecdba0c8214",
+                            "5d1b50be612cf1248b6e101f8d1c5b53",
+                            "0d6a7a9ec31ab7448a777f0e2daef4af",
+                            "",
+                        };
 
                         int fallbackShaderType = tag.Contains("Standard")            ? 1 : 0;
                             fallbackShaderType = tag.Contains("VertexLit")           ? 2 : fallbackShaderType;
@@ -157,6 +174,18 @@ namespace lilToon
                             fallbackRenderType = tag.Contains("Fade")           ? 3 : fallbackRenderType;
 
                         int fallbackCullType = tag.Contains("DoubleSided") ? 1 : 0;
+
+                        int fallbackShadingType = -1;
+                        if(ramp.p != null && ramp.textureValue)
+                        {
+                            var path = AssetDatabase.GetAssetPath(ramp.textureValue);
+                            var guid = AssetDatabase.AssetPathToGUID(path);
+                            fallbackShadingType = Array.IndexOf(sFallbackRampGuids, guid);
+                        }
+                        if(fallbackShadingType < 0)
+                        {
+                            fallbackShadingType = Array.IndexOf(sFallbackShadingTypes, "Custom");
+                        }
 
                         fallbackShaderType = lilEditorGUI.Popup("Shader Type", fallbackShaderType, sFallbackShaderTypes);
                         fallbackRenderType = lilEditorGUI.Popup("Rendering Mode", fallbackRenderType, sFallbackRenderTypes);
@@ -191,22 +220,56 @@ namespace lilToon
                             case 1: tag += "DoubleSided"; break;
                             default: break;
                         }
-                        EditorGUILayout.LabelField("Result:", '"' + tag + '"');
+
+                        if(ramp.p != null && tag.Contains("toonstandard"))
+                        {
+                            EditorGUI.BeginChangeCheck();
+                            fallbackShadingType = lilEditorGUI.Popup("Shading", fallbackShadingType, sFallbackShadingTypes);
+                            if(EditorGUI.EndChangeCheck())
+                            {
+                                var guid = sFallbackRampGuids[fallbackShadingType];
+                                var path = AssetDatabase.GUIDToAssetPath(guid);
+                                ramp.textureValue = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                            }
+                            if(sFallbackShadingTypes[fallbackShadingType] == "Custom")
+                            {
+                                LocalizedPropertyTexture(new GUIContent(ramp.displayName), ramp);
+                            }
+                            EditorGUILayout.BeginHorizontal();
+                            EditorGUILayout.LabelField("Result", '"' + tag + '"');
+                            EditorGUI.BeginDisabledGroup(true);
+                            EditorGUILayout.ObjectField(ramp.textureValue, typeof(Texture2D), false, GUILayout.Width(32));
+                            EditorGUI.EndDisabledGroup();
+                            EditorGUILayout.EndHorizontal();
+                        }
+                        else
+                        {
+                            if(ramp.p != null)
+                            {
+                                ramp.textureValue = null;
+                            }
+                            EditorGUILayout.LabelField("Result", '"' + tag + '"');
+                        }
+
                         EditorGUILayout.EndVertical();
                     }
                     else
                     {
                         tag = "";
+                        if(ramp.p != null)
+                        {
+                            ramp.textureValue = null;
+                        }
                     }
                     EditorGUI.showMixedValue = false;
                     if(EditorGUI.EndChangeCheck())
                     {
+                        m_MaterialEditor.RegisterPropertyChangeUndo("VRCFallback");
                         foreach(var obj in m_MaterialEditor.targets.Where(obj => obj is Material))
                         {
                             ((Material)obj).SetOverrideTag("VRCFallback", tag);
                             EditorUtility.SetDirty(obj);
                         }
-                        AssetDatabase.SaveAssets();
                     }
                     EditorGUILayout.EndVertical();
                 }
@@ -226,20 +289,22 @@ namespace lilToon
         #region
         private void CheckShaderType(Material material)
         {
-            isLite          = material.shader.name.Contains("Lite");
-            isCutout        = material.shader.name.Contains("Cutout");
-            isTransparent   = material.shader.name.Contains("Transparent") || material.shader.name.Contains("Overlay");
-            isOutl          = !isMultiVariants && material.shader.name.Contains("Outline");
-            isRefr          = !isMultiVariants && material.shader.name.Contains("Refraction");
-            isBlur          = !isMultiVariants && material.shader.name.Contains("Blur");
-            isFur           = !isMultiVariants && material.shader.name.Contains("Fur");
-            isTess          = !isMultiVariants && material.shader.name.Contains("Tessellation");
-            isGem           = !isMultiVariants && material.shader.name.Contains("Gem");
-            isFakeShadow    = !isMultiVariants && material.shader.name.Contains("FakeShadow");
-            isOnePass       = material.shader.name.Contains("OnePass");
-            isTwoPass       = material.shader.name.Contains("TwoPass");
-            isMulti         = material.shader.name.Contains("Multi");
-            isCustomShader  = material.shader.name.Contains("Optional");
+            var shaderName = material.shader.name;
+
+            isLite          = lilShaderUtils.IsLiteShaderName(shaderName);
+            isCutout        = lilShaderUtils.IsCutoutShaderName(shaderName);
+            isTransparent   = lilShaderUtils.IsTransparentShaderName(shaderName) || lilShaderUtils.IsOverlayShaderName(shaderName);
+            isOutl          = !isMultiVariants && lilShaderUtils.IsOutlineShaderName(shaderName);
+            isRefr          = !isMultiVariants && lilShaderUtils.IsRefractionShaderName(shaderName);
+            isBlur          = !isMultiVariants && lilShaderUtils.IsBlurShaderName(shaderName);
+            isFur           = !isMultiVariants && lilShaderUtils.IsFurShaderName(shaderName);
+            isTess          = !isMultiVariants && lilShaderUtils.IsTessellationShaderName(shaderName);
+            isGem           = !isMultiVariants && lilShaderUtils.IsGemShaderName(shaderName);
+            isFakeShadow    = !isMultiVariants && lilShaderUtils.IsFakeShadowShaderName(shaderName);
+            isOnePass       = lilShaderUtils.IsOnePassShaderName(shaderName);
+            isTwoPass       = lilShaderUtils.IsTwoPassShaderName(shaderName);
+            isMulti         = lilShaderUtils.IsMultiShaderName(shaderName);
+            isCustomShader  = lilShaderUtils.IsOptionalShaderName(shaderName);
             isShowRenderMode = !isCustomShader;
             isStWr          = stencilPass.floatValue == (float)StencilOp.Replace;
 
@@ -296,12 +361,12 @@ namespace lilToon
                 copiedProperties[p.name] != null
             ))
             {
-                var propType = p.type;
-                if(propType == MaterialProperty.PropType.Color)   p.colorValue = copiedProperties[p.name].colorValue;
-                if(propType == MaterialProperty.PropType.Vector)  p.vectorValue = copiedProperties[p.name].vectorValue;
-                if(propType == MaterialProperty.PropType.Float)   p.floatValue = copiedProperties[p.name].floatValue;
-                if(propType == MaterialProperty.PropType.Range)   p.floatValue = copiedProperties[p.name].floatValue;
-                if(propType == MaterialProperty.PropType.Texture) p.textureValue = copiedProperties[p.name].textureValue;
+                var propType = p.propertyType;
+                if(propType == ShaderPropertyType.Color)   p.colorValue = copiedProperties[p.name].colorValue;
+                if(propType == ShaderPropertyType.Vector)  p.vectorValue = copiedProperties[p.name].vectorValue;
+                if(propType == ShaderPropertyType.Float)   p.floatValue = copiedProperties[p.name].floatValue;
+                if(propType == ShaderPropertyType.Range)   p.floatValue = copiedProperties[p.name].floatValue;
+                if(propType == ShaderPropertyType.Texture) p.textureValue = copiedProperties[p.name].textureValue;
             }
         }
 
@@ -318,12 +383,12 @@ namespace lilToon
                 var shader = ((Material)p.targets[0]).shader;
                 int propID = shader.FindPropertyIndex(p.name);
                 if(propID == -1) continue;
-                var propType = p.type;
-                if(propType == MaterialProperty.PropType.Color)     p.colorValue = shader.GetPropertyDefaultVectorValue(propID);
-                if(propType == MaterialProperty.PropType.Vector)    p.vectorValue = shader.GetPropertyDefaultVectorValue(propID);
-                if(propType == MaterialProperty.PropType.Float)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
-                if(propType == MaterialProperty.PropType.Range)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
-                if(propType == MaterialProperty.PropType.Texture)   p.textureValue = null;
+                var propType = p.propertyType;
+                if(propType == ShaderPropertyType.Color)     p.colorValue = shader.GetPropertyDefaultVectorValue(propID);
+                if(propType == ShaderPropertyType.Vector)    p.vectorValue = shader.GetPropertyDefaultVectorValue(propID);
+                if(propType == ShaderPropertyType.Float)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
+                if(propType == ShaderPropertyType.Range)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
+                if(propType == ShaderPropertyType.Texture)   p.textureValue = null;
             }
             #endif
         }

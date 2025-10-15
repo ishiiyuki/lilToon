@@ -21,7 +21,7 @@
 #if !defined(LIL_PASS_FORWARDADD)
     #define LIL_V2G_LIGHTCOLOR
     #define LIL_V2G_LIGHTDIRECTION
-    #if defined(LIL_FEATURE_SHADOW)
+    #if defined(LIL_FEATURE_SHADOW) && (defined(LIL_BRP) || defined(LIL_HDRP))
         #define LIL_V2G_INDLIGHTCOLOR
     #endif
 #endif
@@ -38,7 +38,7 @@
 #if !defined(LIL_PASS_FORWARDADD)
     #define LIL_V2F_LIGHTCOLOR
     #define LIL_V2F_LIGHTDIRECTION
-    #if defined(LIL_FEATURE_SHADOW)
+    #if defined(LIL_BRP) || defined(LIL_HDRP)
         #define LIL_V2F_INDLIGHTCOLOR
     #endif
 #endif
@@ -86,9 +86,32 @@ float4 frag(v2f input) : SV_Target
 {
     //------------------------------------------------------------------------------------------------------------------------------
     // Initialize
+    LIL_FORCE_SCENE_LIGHT;
     LIL_SETUP_INSTANCE_ID(input);
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
+
+    // For VRCLV
+    #if defined(LIL_BRP) && defined(LIL_PASS_FORWARD) && defined(VRC_LIGHT_VOLUMES_INCLUDED) && (defined(LIL_INPUT_OPTIMIZED) || defined(LIL_MULTI))
+        if(_UdonLightVolumeEnabled)
+        {
+            lilVertexPositionInputs vertexInput = lilGetVertexPositionInputsFromWS(input.positionWS);
+            lilVertexNormalInputs vertexNormalInput = lilGetVertexNormalInputsFromWS(input.normalWS);
+            LIL_UNPACK_TEXCOORD1(input,fd);
+            #define input fd
+            LIL_CALC_MAINLIGHT(vertexInput, lightdataInput);
+            #undef input
+            #if defined(LIL_V2F_LIGHTCOLOR)
+                input.lightColor     = lightdataInput.lightColor;
+            #endif
+            #if defined(LIL_V2F_LIGHTDIRECTION)
+                input.lightDirection = lightdataInput.lightDirection;
+            #endif
+            #if defined(LIL_V2F_INDLIGHTCOLOR)
+                input.indLightColor  = lightdataInput.indLightColor;
+            #endif
+        }
+    #endif
 
     BEFORE_UNPACK_V2F
     OVERRIDE_UNPACK_V2F
@@ -96,6 +119,7 @@ float4 frag(v2f input) : SV_Target
     #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD)
         LIL_LIGHT_ATTENUATION(fd.attenuation, input);
     #endif
+
     LIL_GET_LIGHTING_DATA(input,fd);
 
     //------------------------------------------------------------------------------------------------------------------------------
@@ -144,6 +168,20 @@ float4 frag(v2f input) : SV_Target
 
     fd.origN = normalize(input.normalWS);
     fd.N = normalize(input.normalWS);
+    fd.ln = dot(fd.L, fd.N);
+
+    #if defined(LIL_BRP) && defined(LIL_PASS_FORWARD) && defined(VRC_LIGHT_VOLUMES_INCLUDED)
+    if(_UdonLightVolumeEnabled)
+    {
+        LIL_CORRECT_LIGHTCOLOR_PS(fd.indLightColor);
+        LIL_CORRECT_LIGHTCOLOR_VS(fd.indLightColor);
+        float borderMin = _EnvRimBorder - _EnvRimBlur * 0.5;
+        float borderMax = _EnvRimBorder + _EnvRimBlur * 0.5;
+        float fakerim = saturate((fd.ln - fd.vl - borderMin) / saturate(borderMax - borderMin + fwidth(fd.ln - fd.vl) * _AAStrength));
+        fd.lightColor += saturate(fd.indLightColor - fd.lightColor) * fakerim;
+        fd.indLightColor = 0;
+    }
+    #endif
 
     BEFORE_SHADOW
     #ifndef LIL_PASS_FORWARDADD
@@ -177,7 +215,7 @@ float4 frag(v2f input) : SV_Target
         OVERRIDE_RIMSHADE
     #endif
 
-    fd.col.rgb += input.furLayer * pow((1-abs(dot(normalize(fd.N), fd.V))), _FurRimFresnelPower) * lerp(1,lilGray(fd.invLighting), _FurRimAntiLight) * _FurRimColor.rgb * fd.lightColor;
+    fd.col.rgb += input.furLayer * pow(saturate(1-abs(dot(normalize(fd.N), fd.V))), _FurRimFresnelPower) * lerp(1,lilGray(fd.invLighting), _FurRimAntiLight) * _FurRimColor.rgb * fd.lightColor;
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Distance Fade

@@ -1,8 +1,16 @@
 {
     "name": "lilToon.Editor",
+    "rootNamespace": "",
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
     "versionDefines": [
         {
             "name": "com.vrchat.avatars",
@@ -28,6 +36,12 @@
             "name": "red.sim.lightvolumes",
             "expression": "",
             "define": "LILTOON_VRCLIGHTVOLUMES"
+        },
+        {
+            "name": "com.llealloo.audiolink",
+            "expression": "2",
+            "define": "LILTOON_AUDIOLINK"
         }
-    ]
+    ],
+    "noEngineReferences": false
 }
