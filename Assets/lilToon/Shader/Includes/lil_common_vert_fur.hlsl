@@ -37,6 +37,52 @@ v2g vert(appdata input)
     // Invisible
     if(_Invisible) return output;
     
+
+
+        if (_NoMirror)
+    {
+        if (0 < _VRChatMirrorMode)
+        {
+            return output;
+        }
+/*
+else if (LIL_MATRIX_P[2][2] <= 0)
+{
+    clip(-1);
+}
+*/
+
+    }
+    else if (_OnlyMirror)
+    {
+        if (0 == _VRChatMirrorMode)
+        {
+            
+            return output;
+        }
+    }
+
+
+    if (_NoCamera)
+    {
+        if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+        {
+            return output;
+        }
+/*
+if (IsInVRCCamera())
+{
+    clip(-1);
+}
+*/
+    }
+    else if (_OnlyCamera)
+    {
+        if (0 == _VRChatCameraMode)
+        {
+            return output;
+        }
+    }
     //------------------------------------------------------------------------------------------------------------------------------
     // Single Pass Instanced rendering
     LIL_SETUP_INSTANCE_ID(input);
@@ -384,6 +430,51 @@ void geom(triangle v2g input[3], inout TriangleStream<v2f> outStream)
     //------------------------------------------------------------------------------------------------------------------------------
     // Invisible
     if(_Invisible) return;
+
+        if (_NoMirror)
+    {
+        if (0 < _VRChatMirrorMode)
+        {
+            return;
+        }
+/*
+else if (LIL_MATRIX_P[2][2] <= 0)
+{
+    clip(-1);
+}
+*/
+
+    }
+    else if (_OnlyMirror)
+    {
+        if (0 == _VRChatMirrorMode)
+        {
+            
+            return;
+        }
+    }
+
+
+    if (_NoCamera)
+    {
+        if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+        {
+            return;
+        }
+/*
+if (IsInVRCCamera())
+{
+    clip(-1);
+}
+*/
+    }
+    else if (_OnlyCamera)
+    {
+        if (0 == _VRChatCameraMode)
+        {
+            return;
+        }
+    }
 
     LIL_SETUP_INSTANCE_ID(input[0]);
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input[0]);

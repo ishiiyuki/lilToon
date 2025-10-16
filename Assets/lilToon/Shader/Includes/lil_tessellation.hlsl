@@ -38,6 +38,54 @@ lilTessellationFactors hullConst(InputPatch<appdataCopy, 3> input)
 
     if(_Invisible) return output;
 
+   
+        if (_NoMirror)
+    {
+        if (0 < _VRChatMirrorMode)
+        {
+            return output;
+        }
+/*
+else if (LIL_MATRIX_P[2][2] <= 0)
+{
+    clip(-1);
+}
+*/
+
+    }
+    else if (_OnlyMirror)
+    {
+        if (0 == _VRChatMirrorMode)
+        {
+            
+            return output;
+        }
+    }
+
+
+    if (_NoCamera)
+    {
+        if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+        {
+            return output;
+        }
+/*
+if (IsInVRCCamera())
+{
+    clip(-1);
+}
+*/
+    }
+    else if (_OnlyCamera)
+    {
+        if (0 == _VRChatCameraMode)
+        {
+            return output;
+        }
+    }
+
+
+
     LIL_VERTEX_POSITION_INPUTS(input[0].positionOS, vertexInput_0);
     LIL_VERTEX_POSITION_INPUTS(input[1].positionOS, vertexInput_1);
     LIL_VERTEX_POSITION_INPUTS(input[2].positionOS, vertexInput_2);

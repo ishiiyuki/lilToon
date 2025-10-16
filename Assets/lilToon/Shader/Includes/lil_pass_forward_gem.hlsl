@@ -93,6 +93,52 @@
 #else
     float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
     {
+        
+        //Izuna
+        if (_NoMirror)
+        {
+            if (0 < _VRChatMirrorMode)
+            {
+                clip(-1);
+            }
+        /*
+        else if (LIL_MATRIX_P[2][2] <= 0)
+        {
+            clip(-1);
+        }
+        */
+
+        }
+        else if (_OnlyMirror)
+        {
+            if (0 == _VRChatMirrorMode)
+            {
+                clip(-1);
+            }
+        }
+
+
+        if (_NoCamera)
+        {
+            if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+            {
+                clip(-1);
+            }
+        /*
+        if (IsInVRCCamera())
+        {
+            clip(-1);
+        }
+        */
+        }
+        else if (_OnlyCamera)
+        {
+            if (0 == _VRChatCameraMode)
+            {
+                clip(-1);
+            }
+        }
+    //------------------------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------------------------------------------
         // Initialize
         LIL_FORCE_SCENE_LIGHT;

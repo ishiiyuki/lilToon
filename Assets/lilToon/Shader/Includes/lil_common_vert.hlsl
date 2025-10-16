@@ -85,6 +85,51 @@ LIL_V2F_TYPE vert(appdata input)
 
     #undef LIL_VERTEX_CONDITION
     
+
+                        //Izuna
+        if (_NoMirror)
+        {
+            if (0 < _VRChatMirrorMode)
+            {
+                return LIL_V2F_OUT;
+            }
+        /*
+        else if (LIL_MATRIX_P[2][2] <= 0)
+        {
+            clip(-1);
+        }
+        */
+
+        }
+        else if (_OnlyMirror)
+        {
+            if (0 == _VRChatMirrorMode)
+            {
+                return LIL_V2F_OUT;
+            }
+        }
+
+
+        if (_NoCamera)
+        {
+            if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+            {
+                return LIL_V2F_OUT;
+            }
+        /*
+        if (IsInVRCCamera())
+        {
+            clip(-1);
+        }
+        */
+        }
+        else if (_OnlyCamera)
+        {
+            if (0 == _VRChatCameraMode)
+            {
+                return LIL_V2F_OUT;
+            }
+        }
     //------------------------------------------------------------------------------------------------------------------------------
     // Single Pass Instanced rendering
     LIL_SETUP_INSTANCE_ID(input);
@@ -444,6 +489,53 @@ LIL_V2F_TYPE vert(appdata input)
         //------------------------------------------------------------------------------------------------------------------------------
         // Invisible
         if(_Invisible) return;
+
+
+        if (_NoMirror)
+    {
+        if (0 < _VRChatMirrorMode)
+        {
+            return;
+        }
+/*
+else if (LIL_MATRIX_P[2][2] <= 0)
+{
+    clip(-1);
+}
+*/
+
+    }
+    else if (_OnlyMirror)
+    {
+        if (0 == _VRChatMirrorMode)
+        {
+            
+            return;
+        }
+    }
+
+
+    if (_NoCamera)
+    {
+        if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+        {
+            return;
+        }
+/*
+if (IsInVRCCamera())
+{
+    clip(-1);
+}
+*/
+    }
+    else if (_OnlyCamera)
+    {
+        if (0 == _VRChatCameraMode)
+        {
+            return;
+        }
+    }
+
 
         v2f output[3];
         LIL_INITIALIZE_STRUCT(v2f, output[0]);

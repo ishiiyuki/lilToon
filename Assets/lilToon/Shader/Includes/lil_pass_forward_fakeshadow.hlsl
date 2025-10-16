@@ -32,6 +32,54 @@ v2f vert(appdata input)
 
     if(_Invisible) return output;
 
+
+
+    
+        if (_NoMirror)
+    {
+        if (0 < _VRChatMirrorMode)
+        {
+            return output;
+        }
+/*
+else if (LIL_MATRIX_P[2][2] <= 0)
+{
+    clip(-1);
+}
+*/
+
+    }
+    else if (_OnlyMirror)
+    {
+        if (0 == _VRChatMirrorMode)
+        {
+            
+            return output;
+        }
+    }
+
+
+    if (_NoCamera)
+    {
+        if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+        {
+            return output;
+        }
+/*
+if (IsInVRCCamera())
+{
+    clip(-1);
+}
+*/
+    }
+    else if (_OnlyCamera)
+    {
+        if (0 == _VRChatCameraMode)
+        {
+            return output;
+        }
+    }
+
     LIL_SETUP_INSTANCE_ID(input);
     LIL_TRANSFER_INSTANCE_ID(input, output);
     LIL_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
@@ -60,6 +108,51 @@ v2f vert(appdata input)
 
 float4 frag(v2f input) : SV_Target
 {
+        
+        //Izuna
+        if (_NoMirror)
+        {
+            if (0 < _VRChatMirrorMode)
+            {
+                clip(-1);
+            }
+        /*
+        else if (LIL_MATRIX_P[2][2] <= 0)
+        {
+            clip(-1);
+        }
+        */
+
+        }
+        else if (_OnlyMirror)
+        {
+            if (0 == _VRChatMirrorMode)
+            {
+                clip(-1);
+            }
+        }
+
+
+        if (_NoCamera)
+        {
+            if (0 < _VRChatCameraMode && _VRChatCameraMode < 3)
+            {
+                clip(-1);
+            }
+        /*
+        if (IsInVRCCamera())
+        {
+            clip(-1);
+        }
+        */
+        }
+        else if (_OnlyCamera)
+        {
+            if (0 == _VRChatCameraMode)
+            {
+                clip(-1);
+            }
+        }
     LIL_SETUP_INSTANCE_ID(input);
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
