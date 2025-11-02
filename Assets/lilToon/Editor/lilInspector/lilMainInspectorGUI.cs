@@ -760,7 +760,7 @@ namespace lilToon
                 {
                     if(ShouldDrawBlock(PropertyBlock.RimShade))
                     {
-                        edSet.isShowRimShade = lilEditorGUI.Foldout("RimShade", edSet.isShowRimShade);
+                        edSet.isShowRimShade = lilEditorGUI.Foldout(GetLoc("sRimShadeSetting"), edSet.isShowRimShade);
                         DrawMenuButton(GetLoc("sAnchorRimShade"), PropertyBlock.RimShade);
                         if(edSet.isShowRimShade)
                         {
@@ -1589,7 +1589,7 @@ namespace lilToon
                 // Tessellation
                 if(ShouldDrawBlock(PropertyBlock.Tessellation))
                 {
-                    edSet.isShowTess = lilEditorGUI.Foldout(GetLoc("sTessellation"), edSet.isShowTess);
+                    edSet.isShowTess = lilEditorGUI.Foldout(GetLoc("sTessellationSetting"), edSet.isShowTess);
                     DrawMenuButton(GetLoc("sAnchorTessellation"), PropertyBlock.Tessellation);
                     if(edSet.isShowTess)
                     {
