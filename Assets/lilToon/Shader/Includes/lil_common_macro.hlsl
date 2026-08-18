@@ -46,7 +46,7 @@
     #define LIL_ADDITIONAL_LIGHT_MODE 5
     #define LIL_ADDITIONAL_LIGHT_STRENGTH 1
 #else
-    #define LIL_ADDITIONAL_LIGHT_MODE 4
+    #define LIL_ADDITIONAL_LIGHT_MODE 5
     #define LIL_ADDITIONAL_LIGHT_STRENGTH 1
 #endif
 
@@ -2127,7 +2127,7 @@ struct lilLightData
 #elif defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2)
     #define LIL_CALC_MAINLIGHT(i,o) \
         lilLightData o; \
-        o.lightDirection = lilGetFixedLightDirectionAPV(i.positionWS, 0, _LightDirectionOverride); \
+        o.lightDirection = lilGetFixedLightDirectionAPV(i.positionWS, 0, _LightDirectionOverride, lilGetAPVSample(i.positionWS, 0)); \
         LIL_CALC_TWOLIGHT(i,o); \
         LIL_APPLY_ADDITIONALLIGHT_TO_MAIN(i,o); \
         LIL_CORRECT_LIGHTCOLOR_VS(o.lightColor)

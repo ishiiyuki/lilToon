@@ -660,7 +660,13 @@ namespace lilToon
                 if(IsPropZero(material, "_UseRim", animatedProps)) material.SetTexture("_RimColorTex", null);
                 if(IsPropZero(material, "_UseGlitter", animatedProps)) material.SetTexture("_GlitterColorTex", null);
                 if(IsPropZero(material, "_UseParallax", animatedProps)) material.SetTexture("_ParallaxMap", null);
-                if(IsPropZero(material, "_UseAudioLink", animatedProps) || material.GetFloat("_AudioLinkUVMode") != 3.0f || animatedProps.Contains("_AudioLinkUVMode")) material.SetTexture("_AudioLinkMask", null);
+                if(IsPropZero(material, "_UseAudioLink", animatedProps) || (
+                    (material.GetFloat("_AudioLinkUVMode") != 3.0f || animatedProps.Contains("_AudioLinkUVMode"))
+                    && (material.GetFloat("_AudioLinkVertexUVMode") != 3.0f || animatedProps.Contains("_AudioLinkVertexUVMode"))
+                ))
+                {
+                    material.SetTexture("_AudioLinkMask", null);
+                }
                 if(IsPropZero(material, "_UseAudioLink", animatedProps) || IsPropZero(material, "_AudioLinkAsLocal", animatedProps)) material.SetTexture("_AudioLinkLocalMap", null);
             }
         }
